@@ -11,20 +11,28 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 5),
-          ()=>Navigator.pushReplacement(context,
-                                        MaterialPageRoute(builder:
-                                                          (context) => 
-                                                          SecondScreen()
-                                                         )
-                                       )
-         );
+    // Timer(Duration(seconds: 3),
+    //       ()=>Navigator.pushReplacement(context,
+    //                                     MaterialPageRoute(builder:
+    //                                                       (context) => 
+    //                                                       SecondScreen()
+    //                                                      )
+    //                                    )
+        //  );
   }
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.red,
-      child:FlutterLogo(size:MediaQuery.of(context).size.height)
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Container(
+          color: Colors.red,
+          child:Image.asset('images/pic1.jpeg',fit: BoxFit.cover,)
+        ),
+        Container(
+          child: Text("rajat"),
+        )
+      ],
     );
   }
 }
