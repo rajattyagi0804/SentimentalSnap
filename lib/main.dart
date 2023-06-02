@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hey_rajat/homepage.dart';
+import 'package:hey_rajat/splashScreen.dart';
+import 'package:hey_rajat/loginPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,9 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home:  MyHomePage(),
+      home: SplashScreen(),
     );
   }
 }
-
-
