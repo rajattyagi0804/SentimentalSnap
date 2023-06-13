@@ -1,5 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hey_rajat/Auth/auth.dart';
 import 'package:hey_rajat/HomeScreen/moments.dart';
+import 'package:hey_rajat/LoginPage/loginPage.dart';
+import 'package:hey_rajat/WidgetScreen/widget.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -18,49 +22,80 @@ class _DashboardScreenState extends State<DashboardScreen> {
           "Welcome",
           style: TextStyle(color: Colors.black),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                WidgetScreen().remove().then((value) => {
+                      Auth().signOut(),
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (BuildContext context) =>
+                                  const LoginScreen()),
+                          ModalRoute.withName('/'))
+                    });
+              },
+              icon: Icon(
+                Icons.logout,
+                color: Colors.red,
+              )),
+        ],
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Row(
-            children: [
-              card("Good Moments", "Save", "Your", "Good Moment", Colors.indigo,
-                  onclick: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Moments(title: "Good Moments")));
-              }),
-              card("Bad Moments", "Save", "Your", "Bad Moment", Colors.blueGrey,
-                  onclick: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Moments(title: "Bad Moments")));
-              })
-            ],
+      body: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage("images/loginpic.jpg"), fit: BoxFit.cover),
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Row(
+                children: [
+                  card("Good Moments", "Save", "Your", "Good Moment",
+                      Colors.indigo, onclick: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                Moments(title: "Good Moments")));
+                  }),
+                  card("Bad Moments", "Save", "Your", "Bad Moment",
+                      Colors.blueGrey, onclick: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                Moments(title: "Bad Moments")));
+                  })
+                ],
+              ),
+              Row(
+                children: [
+                  card("EnjoyFul Moments", "Save", "Your", "EnjoyFul Moment",
+                      Colors.green, onclick: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                Moments(title: "EnjoyFul Moments")));
+                  }),
+                  card("Other Moments", "Save", "Your", "Other Moment",
+                      Colors.grey, onclick: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                Moments(title: "Other Moments")));
+                  })
+                ],
+              )
+            ]),
           ),
-          Row(
-            children: [
-              card("EnjoyFul Moments", "Save", "Your", "EnjoyFul Moment",
-                  Colors.green, onclick: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            Moments(title: "EnjoyFul Moments")));
-              }),
-              card("Other Moments", "Save", "Your", "Other Moment", Colors.grey,
-                  onclick: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Moments(title: "Other Moments")));
-              })
-            ],
-          )
-        ]),
+        ),
       ),
     );
   }

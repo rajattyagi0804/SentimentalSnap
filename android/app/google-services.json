@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1036787044978",
+    "project_id": "hey-rajat",
+    "storage_bucket": "hey-rajat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1036787044978:android:9c8b8915115fe3139fe8eb",
+        "android_client_info": {
+          "package_name": "com.example.hey_rajat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1036787044978-u0cb963842e66iq9p4c8akedpvu5j2gt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHgmQFCeXOBjHbS86B4noi3Erl3dj-mR8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1036787044978-u0cb963842e66iq9p4c8akedpvu5j2gt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

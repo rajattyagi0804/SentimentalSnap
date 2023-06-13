@@ -38,7 +38,11 @@ dependencies:
   permission_handler: ^10.2.0 
   shared_preferences: ^2.0.15
   app_settings:
-  image_picker:
+  firebase_auth: ^4.6.2
+  firebase_core: ^2.13.1
+  another_flushbar: ^1.10.28
+  cloud_firestore:
+  multi_image_picker: ^4.8.1
 
 dev_dependencies:
   flutter_test:
