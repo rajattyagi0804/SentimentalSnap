@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Container(
             color: Colors.white,
             child: Image.asset(
-              'images/splashimg.jpg',
+              'images/sp.jpg',
               fit: BoxFit.cover,
             )),
         // Positioned(

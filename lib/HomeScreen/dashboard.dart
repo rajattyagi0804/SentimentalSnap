@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hey_rajat/Auth/auth.dart';
 import 'package:hey_rajat/HomeScreen/moments.dart';
 import 'package:hey_rajat/LoginPage/loginPage.dart';
+import 'package:hey_rajat/Utils/utils.dart';
 import 'package:hey_rajat/WidgetScreen/widget.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -18,24 +19,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text(
-          "Welcome",
-          style: TextStyle(color: Colors.black),
+        title: Column(
+          children: [
+            const Text(
+              "Welcome",
+              style: TextStyle(color: Colors.black),
+            ),
+            const Text(
+              "How are you today?",
+              style: TextStyle(color: Colors.black, fontSize: 13),
+            ),
+          ],
         ),
         actions: [
           IconButton(
               onPressed: () {
-                WidgetScreen().remove().then((value) => {
-                      Auth().signOut(),
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          CupertinoPageRoute(
-                              builder: (BuildContext context) =>
-                                  const LoginScreen()),
-                          ModalRoute.withName('/'))
+                Utils.alertpopup(
+                    buttontitle: "Yes",
+                    context: context,
+                    title: "Are you sure you want to Logout?",
+                    onclick: () {
+                      WidgetScreen().remove().then((value) => {
+                            Auth().signOut(),
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (BuildContext context) =>
+                                        const LoginScreen()),
+                                ModalRoute.withName('/'))
+                          });
                     });
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.logout,
                 color: Colors.red,
               )),
@@ -44,55 +59,53 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       body: Container(
         alignment: Alignment.center,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
-              image: AssetImage("images/loginpic.jpg"), fit: BoxFit.cover),
+              image: AssetImage("images/awesome.jpg"), fit: BoxFit.fill),
         ),
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Row(
-                children: [
-                  card("Good Moments", "Save", "Your", "Good Moment",
-                      Colors.indigo, onclick: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                Moments(title: "Good Moments")));
-                  }),
-                  card("Bad Moments", "Save", "Your", "Bad Moment",
-                      Colors.blueGrey, onclick: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                Moments(title: "Bad Moments")));
-                  })
-                ],
+              card("Good Moments", 'images/enjoyed.jpeg',
+                  const Color.fromARGB(255, 109, 127, 230), onclick: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Moments(title: "Good Moments")));
+              }),
+              const SizedBox(
+                height: 5,
               ),
-              Row(
-                children: [
-                  card("EnjoyFul Moments", "Save", "Your", "EnjoyFul Moment",
-                      Colors.green, onclick: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                Moments(title: "EnjoyFul Moments")));
-                  }),
-                  card("Other Moments", "Save", "Your", "Other Moment",
-                      Colors.grey, onclick: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                Moments(title: "Other Moments")));
-                  })
-                ],
-              )
+              card("Bad Moments", 'images/badmoments.jpeg', Colors.blueGrey,
+                  onclick: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Moments(title: "Bad Moments")));
+              }),
+              const SizedBox(
+                height: 5,
+              ),
+              card("EnjoyFul Moments", 'images/enjoyment.jpg', Colors.green,
+                  onclick: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            Moments(title: "EnjoyFul Moments")));
+              }),
+              const SizedBox(
+                height: 5,
+              ),
+              card("Other Moments", 'images/othermoments.jpeg', Colors.grey,
+                  onclick: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Moments(title: "Other Moments")));
+              })
             ]),
           ),
         ),
@@ -102,61 +115,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget card(
     String title,
-    String subtitle1,
-    String subtitle2,
-    String subtitle3,
+    String image,
     Color color, {
     required VoidCallback onclick,
   }) {
     return GestureDetector(
-      onTap: onclick,
-      child: Container(
-          height: 200,
-          width: 200,
-          decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(50))),
-          child: Card(
-            color: color,
-            elevation: 10,
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
-                  ),
-                  const Divider(
-                    thickness: 1.2,
-                    color: Colors.white,
-                  ),
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: "$subtitle1\n",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16)),
-                        TextSpan(
-                            text: "$subtitle2\n",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                color: Colors.red)),
-                        TextSpan(
-                            text: "$subtitle3",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 22,
-                                color: Colors.amber))
-                      ],
-                    ),
-                  ),
-                ]),
-          )),
-    );
+        onTap: onclick,
+        child: Container(
+          decoration: BoxDecoration(
+              color: color, borderRadius: BorderRadius.circular(20)),
+          child: ListTile(
+            title: Text(
+              title,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.w600),
+            ),
+            subtitle: Text(
+              "Save your $title",
+              style: const TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Color.fromARGB(255, 4, 1, 1)),
+            ),
+            leading: CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 27,
+              child: CircleAvatar(
+                radius: 25,
+                backgroundImage: AssetImage(image),
+              ),
+            ),
+            trailing: const Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: Colors.white,
+            ),
+          ),
+        ));
   }
 }

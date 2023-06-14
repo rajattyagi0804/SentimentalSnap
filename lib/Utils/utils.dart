@@ -1,31 +1,17 @@
-import 'dart:convert';
-
+import 'package:another_flushbar/flushbar.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Utils {
-  static convertbase64toimage(String thumbnail) {
-    String placeholder =
-        "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
-    if (thumbnail.isEmpty)
-      thumbnail = placeholder;
-    else {
-      if (thumbnail.length % 4 > 0) {
-        thumbnail +=
-            '=' * (4 - thumbnail.length % 4); // as suggested by Albert221
-      }
-    }
-    final _byteImage = const Base64Decoder().convert(thumbnail);
-
-    return _byteImage;
-  }
-
   //permission of gallery
-  static void gallerypermisionpopup(
+  static void alertpopup(
       {required String title,
       required String buttontitle,
       required VoidCallback onclick,
@@ -66,55 +52,164 @@ class Utils {
   }
 
   //for Camera permisiion
+
   static Future<bool> checkCameraPermissions() async {
-    PermissionStatus status = await Permission.camera.status;
+    PermissionStatus status = await Permission.storage.status;
+
+    if (status.isGranted) {
+      return true;
+    }
     if (status.isDenied) {
-      PermissionStatus newStatus = await Permission.camera.request();
-      if (newStatus.isDenied) return false;
+      PermissionStatus newStatus = await Permission.storage.request();
+      if (status.isDenied) {
+        return false;
+      }
     }
-    if (status.isPermanentlyDenied) {
-      // Permissions are denied forever, handle appropriately.
-      return false;
-    }
+
     return true;
   }
 
-  static Future<List<String>> convertimagetobase64() async {
+  static Future<String> uploadImageToStorage(
+    List<int> imageBytes,
+    int currentIndex,
+    int totalPhotos,
+    ProgressDialog progressDialog,
+  ) async {
+    try {
+      // Generate a unique filename for the image
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+      // Create a reference to the Firebase Storage location
+      firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref().child(fileName);
+
+      // Convert the image bytes to a Uint8List
+      Uint8List uint8List = Uint8List.fromList(imageBytes);
+
+      // Upload the image data to Firebase Storage
+      firebase_storage.UploadTask uploadTask = storageRef.putData(uint8List);
+
+      // Listen to the task snapshot for progress updates
+      uploadTask.snapshotEvents
+          .listen((firebase_storage.TaskSnapshot snapshot) {
+        double totalProgress = 0.0;
+
+        if (totalPhotos > 0) {
+          double progressPerPhoto = 100.0 / totalPhotos;
+          double currentPhotoProgress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) *
+                  progressPerPhoto;
+          totalProgress =
+              (currentIndex - 1) * progressPerPhoto + currentPhotoProgress;
+        }
+
+        progressDialog.update(
+          message:
+              "Uploading Photo $currentIndex of $totalPhotos (${totalProgress.toStringAsFixed(2)}%)",
+        );
+      });
+
+      // Wait for the upload task to complete
+      await uploadTask;
+
+      // Get the download URL of the uploaded image
+      String imageUrl = await storageRef.getDownloadURL();
+
+      return imageUrl;
+    } catch (e) {
+      print("Error uploading image: $e");
+      return "";
+    }
+  }
+
+  static Future<List<String>> convertImagesToBase64(
+      BuildContext context) async {
     List<Asset> assets = [];
-    List<String> base64Images = [];
+    List<String> imageUrls = [];
 
     try {
       assets = await MultiImagePicker.pickImages(
-        maxImages: 10, // Specify the maximum number of images to select
-        enableCamera: true, // Allow capturing images from the camera
-        selectedAssets:
-            assets, // Initially selected assets (empty in this example)
+        maxImages: 10,
+        enableCamera: true,
+        selectedAssets: assets,
         materialOptions: const MaterialOptions(
           actionBarTitle: "Select Images",
         ),
       );
     } on Exception catch (e) {
-      // Handle any errors that occurred during image selection
       print(e.toString());
+      // Handle image selection error
     }
 
-    for (var asset in assets) {
-      // Retrieve the image data as bytes
-      ByteData byteData = await asset.getByteData();
-      List<int> imageBytes = byteData.buffer.asUint8List();
+    if (assets.isNotEmpty) {
+      ProgressDialog progressDialog = ProgressDialog(
+        isDismissible: false,
+        context,
+      ); // Set barrierDismissible to false
+      progressDialog.style(
+        message: "Uploading Images...",
+        progressWidget: SizedBox(
+          width: 36.0,
+          height: 36.0,
+          child: Transform.scale(
+            scale: 0.7, // Adjust the scale value as needed
+            child: CircularProgressIndicator(
+              strokeWidth: 3.0,
+            ),
+          ),
+        ),
+      );
+      progressDialog.show();
 
-      // Convert the image bytes to base64
-      String base64Image = base64Encode(imageBytes);
+      for (var index = 0; index < assets.length; index++) {
+        var asset = assets[index];
+        // Retrieve the image data as bytes
+        ByteData byteData = await asset.getByteData();
+        List<int> imageBytes = byteData.buffer.asUint8List();
 
-      base64Images.add(base64Image);
+        // Upload image to Firebase Storage
+        String imageUrl = await uploadImageToStorage(
+          await compressImage(imageBytes),
+          index + 1,
+          assets.length,
+          progressDialog,
+        );
+
+        if (imageUrl != null) {
+          imageUrls.add(imageUrl);
+        }
+      }
+
+      progressDialog.hide();
     }
 
-    return base64Images;
+    return imageUrls;
+  }
+
+  static Future<List<int>> compressImage(List<int> imageBytes) async {
+    Uint8List uint8List = Uint8List.fromList(imageBytes);
+    final compressedBytes = await FlutterImageCompress.compressWithList(
+      uint8List,
+      minHeight: 1920,
+      minWidth: 1080,
+      quality: 70,
+    );
+
+    return compressedBytes;
   }
 
   static Future getuid() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     final String uid = sp.getString("uid")!;
     return uid;
+  }
+
+  static show_Simple_Snackbar(BuildContext context, String? message) {
+    Flushbar(
+      duration: Duration(seconds: 3),
+      backgroundColor: Color.fromARGB(255, 230, 225, 225),
+      message: message,
+      messageColor: Colors.red,
+    )..show(context);
   }
 }

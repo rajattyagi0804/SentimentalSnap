@@ -1,7 +1,7 @@
-import 'package:another_flushbar/flushbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hey_rajat/Auth/auth.dart';
+import 'package:hey_rajat/Utils/utils.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,11 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
           password: _passwordcontroller.text,
           context: context);
     } on FirebaseAuthException catch (e) {
-      setState(() {
-        errormessage = e.message;
-        print("$errormessage sdsdsadasdsdsa");
-        show_Simple_Snackbar(context, errormessage);
-      });
+      errormessage = e.message;
+      Utils.show_Simple_Snackbar(context, errormessage);
     }
   }
 
@@ -209,14 +206,5 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
-  }
-
-  static show_Simple_Snackbar(BuildContext context, String? message) {
-    Flushbar(
-      duration: Duration(seconds: 3),
-      backgroundColor: Color.fromARGB(255, 230, 225, 225),
-      message: message,
-      messageColor: Colors.red,
-    )..show(context);
   }
 }
