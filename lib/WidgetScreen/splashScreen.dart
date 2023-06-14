@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hey_rajat/HomeScreen/dashboard.dart';
 import 'package:hey_rajat/LoginPage/loginPage.dart';
+import 'package:hey_rajat/LoginPage/loginchoice.dart';
 import 'package:hey_rajat/WidgetScreen/widget.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -20,13 +22,16 @@ class _SplashScreenState extends State<SplashScreen> {
               if (value) {
                 Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => const LoginScreen()));
+                    CupertinoPageRoute(
+                        builder: (BuildContext context) =>
+                            const LoginAsUserOrAdmin()));
               } else {
                 Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const DashboardScreen()));
+                  context,
+                  CupertinoPageRoute(
+                      builder: (BuildContext context) =>
+                          const DashboardScreen()),
+                );
               }
             }));
   }

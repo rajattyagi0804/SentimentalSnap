@@ -1,10 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hey_rajat/Admin/adminScreen.dart';
 import 'package:hey_rajat/Auth/auth.dart';
+import 'package:hey_rajat/HomeScreen/dashboard.dart';
 import 'package:hey_rajat/Utils/utils.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  String role;
+  LoginScreen({super.key, required this.role});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -40,6 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
+        leading: BackButton(color: Colors.black),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -186,7 +191,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         final isValidForm = _FormKey.currentState!.validate();
                         if (isValidForm) {
-                          signInwithEmailandPassword();
+                          if (widget.role == "Admin") {
+                            if (_emailcontroller.text.trim() ==
+                                    "rajattyrajatagi0804@gmail.com" &&
+                                _passwordcontroller.text.trim() == "qwerty") {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  CupertinoPageRoute(
+                                      builder: (BuildContext context) =>
+                                          const AdminScreen()),
+                                  ModalRoute.withName('/'));
+                            }
+                          } else {
+                            signInwithEmailandPassword();
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(
