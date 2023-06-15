@@ -1,9 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hey_rajat/Admin/adminScreen.dart';
 import 'package:hey_rajat/Auth/auth.dart';
-import 'package:hey_rajat/HomeScreen/dashboard.dart';
 import 'package:hey_rajat/Utils/utils.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -22,12 +19,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordcontroller = TextEditingController();
   final GlobalKey<FormState> _FormKey = GlobalKey<FormState>();
 
-  Future<void> signInwithEmailandPassword() async {
+  Future<void> signInwithEmailandPassword(String role) async {
     try {
       await Auth().signInWithEmailandPassword(
           email: _emailcontroller.text,
           password: _passwordcontroller.text,
-          context: context);
+          context: context,
+          role: role);
     } on FirebaseAuthException catch (e) {
       errormessage = e.message;
       Utils.show_Simple_Snackbar(context, errormessage);
@@ -192,18 +190,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         final isValidForm = _FormKey.currentState!.validate();
                         if (isValidForm) {
                           if (widget.role == "Admin") {
-                            if (_emailcontroller.text.trim() ==
-                                    "rajattyrajatagi0804@gmail.com" &&
-                                _passwordcontroller.text.trim() == "qwerty") {
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (BuildContext context) =>
-                                          const AdminScreen()),
-                                  ModalRoute.withName('/'));
-                            }
+                            signInwithEmailandPassword(widget.role);
                           } else {
-                            signInwithEmailandPassword();
+                            signInwithEmailandPassword(widget.role);
                           }
                         }
                       },

@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hey_rajat/Admin/adminScreen.dart';
 import 'package:hey_rajat/HomeScreen/dashboard.dart';
-import 'package:hey_rajat/LoginPage/loginPage.dart';
 import 'package:hey_rajat/LoginPage/loginchoice.dart';
+import 'package:hey_rajat/Utils/utils.dart';
+import 'package:hey_rajat/WidgetScreen/bottomnav.dart';
 import 'package:hey_rajat/WidgetScreen/widget.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,64 +18,44 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+
     Timer(
         Duration(seconds: 3),
         () => WidgetScreen().gettoken().then((value) {
-              if (value) {
+              if (value['role'] == "") {
                 Navigator.pushReplacement(
                     context,
                     CupertinoPageRoute(
                         builder: (BuildContext context) =>
                             const LoginAsUserOrAdmin()));
-              } else {
+              } else if (value['role'] == "Admin") {
                 Navigator.pushReplacement(
                   context,
                   CupertinoPageRoute(
-                      builder: (BuildContext context) =>
-                          const DashboardScreen()),
+                      builder: (BuildContext context) => const AdminScreen()),
                 );
+              } else {
+                Utils.getuid().then((valuek) {
+                  Navigator.pushReplacement(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (BuildContext context) => BottomNav(
+                                uid: valuek,
+                                role: value['role'],
+                                email: value['email'],
+                              )));
+                });
               }
             }));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Container(
-            color: Colors.white,
-            child: Image.asset(
-              'images/sp.jpg',
-              fit: BoxFit.cover,
-            )),
-        // Positioned(
-        //     left: 120,
-        //     right: 120,
-        //     bottom: 90,
-        //     child: ElevatedButton(
-        //       style: ElevatedButton.styleFrom(
-        //           shape: const StadiumBorder(),
-        //           elevation: 10,
-        //           minimumSize: const Size(120, 50)),
-        //       child: const Text("Continue >>"),
-        //       onPressed: () {
-        //         WidgetScreen().gettoken().then((value) {
-        //           if (value) {
-        //             Navigator.pushReplacement(
-        //                 context,
-        //                 MaterialPageRoute(
-        //                     builder: (context) => const LoginScreen()));
-        //           } else {
-        //             Navigator.pushReplacement(
-        //                 context,
-        //                 MaterialPageRoute(
-        //                     builder: (context) => const DashboardScreen()));
-        //           }
-        //         });
-        //       },
-        //     ))
-      ],
-    );
+    return Container(
+        color: Colors.white,
+        child: Image.asset(
+          'images/sp.jpg',
+          fit: BoxFit.cover,
+        ));
   }
 }

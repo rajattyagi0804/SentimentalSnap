@@ -8,74 +8,69 @@ class LoginAsUserOrAdmin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Object>(
-        stream: null,
-        builder: (context, snapshot) {
-          return Container(
-            child: Scaffold(
-              appBar: AppBar(
-                centerTitle: true,
-                backgroundColor: Colors.white,
-                title: Text(
-                  "Choose your Role",
-                  style: TextStyle(color: Colors.black),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        title: Text(
+          "Choose your Role",
+          style: TextStyle(color: Colors.black),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: 250,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: AssetImage("images/new.jpg"),
                 ),
               ),
-              body: Column(
-                children: [
-                  Container(
-                    height: 250,
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: AssetImage("images/new.jpg"),
-                      ),
-                    ),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 20,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      LoginScreen(role: "Admin")));
-                        },
-                        child: Text("Admin"),
-                        style: ElevatedButton.styleFrom(
-                            shape: StadiumBorder(),
-                            backgroundColor: Colors.indigo,
-                            minimumSize: Size(200, 50)),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LoginScreen(
-                                        role: "User",
-                                      )));
-                        },
-                        child: Text("User"),
-                        style: ElevatedButton.styleFrom(
-                            shape: StadiumBorder(),
-                            backgroundColor: Colors.amber,
-                            minimumSize: Size(150, 50)),
-                      )
-                    ],
-                  ),
-                ],
-              ),
             ),
-          );
-        });
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LoginScreen(role: "Admin")));
+                  },
+                  child: Text("Admin"),
+                  style: ElevatedButton.styleFrom(
+                      shape: StadiumBorder(),
+                      backgroundColor: Colors.indigo,
+                      minimumSize: Size(200, 50)),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LoginScreen(
+                                  role: "User",
+                                )));
+                  },
+                  child: Text("User"),
+                  style: ElevatedButton.styleFrom(
+                      shape: StadiumBorder(),
+                      backgroundColor: Colors.amber,
+                      minimumSize: Size(150, 50)),
+                )
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

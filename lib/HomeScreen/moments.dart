@@ -7,8 +7,8 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:hey_rajat/Utils/utils.dart';
 
 class Moments extends StatefulWidget {
-  String title;
-  Moments({super.key, required this.title});
+  String title, uid;
+  Moments({super.key, required this.title, required this.uid});
 
   @override
   State<Moments> createState() => _MomentsState();
@@ -19,8 +19,7 @@ class _MomentsState extends State<Moments> {
   bool isload = true;
   static final customchache = CacheManager(Config('customCacheKey',
       stalePeriod: const Duration(days: 2), maxNrOfCacheObjects: 100000000));
-  void addDataToBadMoments(
-      String documentId, List<String> imageUrls, String key) async {
+  void addData(String documentId, List<String> imageUrls, String key) async {
     CollectionReference colRef =
         FirebaseFirestore.instance.collection("heyrajat");
     DocumentReference docRef = colRef.doc(documentId);
@@ -30,11 +29,11 @@ class _MomentsState extends State<Moments> {
 
       if (snapshot.exists) {
         if (imageUrls.isNotEmpty) {
-          List<dynamic> badMomentsList = snapshot.get(key) ?? [];
+          List<dynamic> momentsList = snapshot.get(key) ?? [];
           for (String imageUrl in imageUrls) {
-            badMomentsList.add(imageUrl);
+            momentsList.add(imageUrl);
           }
-          await docRef.set({key: badMomentsList}, SetOptions(merge: true));
+          await docRef.set({key: momentsList}, SetOptions(merge: true));
           getdata(documentId, key);
         }
       } else {
@@ -71,17 +70,16 @@ class _MomentsState extends State<Moments> {
   @override
   void initState() {
     super.initState();
-    Utils.getuid().then((value) {
-      if (widget.title == "Good Moments") {
-        getdata(value, 'goodmoments');
-      } else if (widget.title == "Bad Moments") {
-        getdata(value, 'badmoments');
-      } else if (widget.title == "EnjoyFul Moments") {
-        getdata(value, 'enjoyfulmoments');
-      } else if (widget.title == "Other Moments") {
-        getdata(value, 'othermoments');
-      }
-    });
+
+    if (widget.title == "Good Moments") {
+      getdata(widget.uid, 'goodmoments');
+    } else if (widget.title == "Bad Moments") {
+      getdata(widget.uid, 'badmoments');
+    } else if (widget.title == "EnjoyFul Moments") {
+      getdata(widget.uid, 'enjoyfulmoments');
+    } else if (widget.title == "Other Moments") {
+      getdata(widget.uid, 'othermoments');
+    }
   }
 
   @override
@@ -171,18 +169,15 @@ class _MomentsState extends State<Moments> {
           onPressed: () async {
             if (await Utils.checkCameraPermissions()) {
               Utils.convertImagesToBase64(context).then((value) {
-                print("list length dfd ${value.length}");
-                Utils.getuid().then((uuid) {
-                  if (widget.title == "Good Moments") {
-                    addDataToBadMoments(uuid, value, 'goodmoments');
-                  } else if (widget.title == "Bad Moments") {
-                    addDataToBadMoments(uuid, value, 'badmoments');
-                  } else if (widget.title == "EnjoyFul Moments") {
-                    addDataToBadMoments(uuid, value, 'enjoyfulmoments');
-                  } else if (widget.title == "Other Moments") {
-                    addDataToBadMoments(uuid, value, 'othermoments');
-                  }
-                });
+                if (widget.title == "Good Moments") {
+                  addData(widget.uid, value, 'goodmoments');
+                } else if (widget.title == "Bad Moments") {
+                  addData(widget.uid, value, 'badmoments');
+                } else if (widget.title == "EnjoyFul Moments") {
+                  addData(widget.uid, value, 'enjoyfulmoments');
+                } else if (widget.title == "Other Moments") {
+                  addData(widget.uid, value, 'othermoments');
+                }
               });
             }
 
