@@ -351,6 +351,9 @@ class _MomentsState extends State<Moments> {
         await docRef
             .set({key: momentsList}, SetOptions(merge: true)).then((value) {
           getdata(documentId, key);
+          setState(() {
+            isload = true;
+          });
         });
       } else {
         Utils.show_Simple_Snackbar(
