@@ -4,8 +4,7 @@ import 'package:hey_rajat/Auth/auth.dart';
 import 'package:hey_rajat/Utils/utils.dart';
 
 class LoginScreen extends StatefulWidget {
-  String role;
-  LoginScreen({super.key, required this.role});
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -19,13 +18,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordcontroller = TextEditingController();
   final GlobalKey<FormState> _FormKey = GlobalKey<FormState>();
 
-  Future<void> signInwithEmailandPassword(String role) async {
+  Future<void> signInwithEmailandPassword() async {
     try {
       await Auth().signInWithEmailandPassword(
-          email: _emailcontroller.text,
-          password: _passwordcontroller.text,
-          context: context,
-          role: role);
+        email: _emailcontroller.text,
+        password: _passwordcontroller.text,
+        context: context,
+      );
     } on FirebaseAuthException catch (e) {
       errormessage = e.message;
       Utils.show_Simple_Snackbar(context, errormessage);
@@ -42,7 +41,6 @@ class _LoginScreenState extends State<LoginScreen> {
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
-        leading: BackButton(color: Colors.black),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -189,11 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         final isValidForm = _FormKey.currentState!.validate();
                         if (isValidForm) {
-                          if (widget.role == "Admin") {
-                            signInwithEmailandPassword(widget.role);
-                          } else {
-                            signInwithEmailandPassword(widget.role);
-                          }
+                          signInwithEmailandPassword();
                         }
                       },
                       style: ElevatedButton.styleFrom(

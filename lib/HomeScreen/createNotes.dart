@@ -111,7 +111,19 @@ class _CreateNoteState extends State<CreateNote> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(color: Colors.black),
+        leading: BackButton(
+          color: Colors.black,
+          onPressed: () {
+            Utils.alertpopup(
+                title: "Are you sure you want to exit?",
+                buttontitle: "Yes",
+                context: context,
+                onclick: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                });
+          },
+        ),
         backgroundColor: Colors.white,
         centerTitle: true,
         title: const Text(
@@ -220,7 +232,7 @@ class _CreateNoteState extends State<CreateNote> {
                   ),
 
                   fillColor: Colors.black,
-                  hintText: "Write your thoughts",
+                  hintText: "Write your thoughts...",
                   hintStyle: const TextStyle(
                     color: Colors.black,
                     fontSize: 16,

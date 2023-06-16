@@ -11,31 +11,27 @@ class Auth {
   User? get currentUser => _firebaseAuth.currentUser;
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  Future<void> signInWithEmailandPassword(
-      {required String email,
-      required String password,
-      required BuildContext context,
-      required String role}) async {
+  Future<void> signInWithEmailandPassword({
+    required String email,
+    required String password,
+    required BuildContext context,
+  }) async {
     await _firebaseAuth
         .signInWithEmailAndPassword(email: email, password: password)
         .then((value) async {
       final SharedPreferences sp = await SharedPreferences.getInstance();
       sp.setString("uid", "${value.user?.uid}");
-      sp.setString('role', role);
+
       sp.setString('email', value.user!.email.toString());
 
       addOrUpdateDocument(value.user?.uid, value.user?.email).whenComplete(() {
-        if (role == "Admin") {
-          if (value.user?.uid == "cKVYRq516fX6MyFh6kx3NwpcbCA2") {
-            Navigator.pushAndRemoveUntil(
-                context,
-                CupertinoPageRoute(
-                    builder: (BuildContext context) => const AdminScreen()),
-                ModalRoute.withName('/'));
-          } else {
-            Utils.show_Simple_Snackbar(context, "Sorry you are not admin");
-            signOut();
-          }
+        if (value.user?.uid == "cKVYRq516fX6MyFh6kx3NwpcbCA2") {
+          Navigator.pushAndRemoveUntil(
+              context,
+              CupertinoPageRoute(
+                  builder: (BuildContext context) => const AdminScreen()),
+              ModalRoute.withName('/'));
+          sp.setString('role', "Admin");
         } else {
           Navigator.pushAndRemoveUntil(
               context,
@@ -43,9 +39,10 @@ class Auth {
                   builder: (BuildContext context) => BottomNav(
                         uid: value.user!.uid.toString(),
                         email: value.user!.email.toString(),
-                        role: role,
+                        role: "User",
                       )),
               ModalRoute.withName('/'));
+          sp.setString('role', "User");
         }
       });
     });

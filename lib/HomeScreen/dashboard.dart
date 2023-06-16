@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hey_rajat/Auth/auth.dart';
 import 'package:hey_rajat/HomeScreen/moments.dart';
-import 'package:hey_rajat/LoginPage/loginchoice.dart';
+import 'package:hey_rajat/LoginPage/loginPage.dart';
 import 'package:hey_rajat/Utils/utils.dart';
 import 'package:hey_rajat/WidgetScreen/widget.dart';
 
@@ -55,7 +55,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     context,
                                     CupertinoPageRoute(
                                         builder: (BuildContext context) =>
-                                            const LoginAsUserOrAdmin()),
+                                            LoginScreen()),
                                     ModalRoute.withName('/'))
                               });
                         });

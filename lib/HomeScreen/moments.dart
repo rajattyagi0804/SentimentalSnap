@@ -331,18 +331,15 @@ class _MomentsState extends State<Moments> {
   }
 
   void deleteValues(String documentId, List indices, String key) async {
-    print(widget.uid);
     CollectionReference colRef =
         FirebaseFirestore.instance.collection("heyrajat");
     DocumentReference docRef = colRef.doc(documentId);
-    print(indices);
     try {
       DocumentSnapshot snapshot = await docRef.get();
 
       if (snapshot.exists) {
         List<dynamic> momentsList = snapshot.get(key) ?? [];
 
-        // Sort the indices in descending order to prevent issues with removing elements
         indices.sort((a, b) => b.compareTo(a));
         print(indices);
         print(momentsList);

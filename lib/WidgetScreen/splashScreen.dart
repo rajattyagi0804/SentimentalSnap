@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hey_rajat/Admin/adminScreen.dart';
-import 'package:hey_rajat/HomeScreen/dashboard.dart';
-import 'package:hey_rajat/LoginPage/loginchoice.dart';
+import 'package:hey_rajat/LoginPage/loginPage.dart';
 import 'package:hey_rajat/Utils/utils.dart';
 import 'package:hey_rajat/WidgetScreen/bottomnav.dart';
 import 'package:hey_rajat/WidgetScreen/widget.dart';
@@ -26,8 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 Navigator.pushReplacement(
                     context,
                     CupertinoPageRoute(
-                        builder: (BuildContext context) =>
-                            const LoginAsUserOrAdmin()));
+                        builder: (BuildContext context) => LoginScreen()));
               } else if (value['role'] == "Admin") {
                 Navigator.pushReplacement(
                   context,

@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hey_rajat/Admin/details.dart';
 import 'package:hey_rajat/Auth/auth.dart';
-import 'package:hey_rajat/LoginPage/loginchoice.dart';
+import 'package:hey_rajat/LoginPage/loginPage.dart';
 import 'package:hey_rajat/Utils/firebaseUtils.dart';
 import 'package:hey_rajat/Utils/utils.dart';
 import 'package:hey_rajat/WidgetScreen/bottomnav.dart';
@@ -79,7 +77,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                   context,
                                   CupertinoPageRoute(
                                       builder: (BuildContext context) =>
-                                          const LoginAsUserOrAdmin()),
+                                          LoginScreen()),
                                   ModalRoute.withName('/'))
                             });
                       });
