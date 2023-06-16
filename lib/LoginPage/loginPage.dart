@@ -49,13 +49,13 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               Container(
                 height: 200,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                       image: AssetImage("images/logimage.jpg"),
                       fit: BoxFit.fill),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Form(
