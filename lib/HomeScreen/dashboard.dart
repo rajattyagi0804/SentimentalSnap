@@ -71,7 +71,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         alignment: Alignment.center,
         decoration: const BoxDecoration(
           image: DecorationImage(
-              image: AssetImage("images/awesome.jpg"), fit: BoxFit.fill),
+              image: AssetImage("images/bg.jpg"), fit: BoxFit.fill),
         ),
         child: SingleChildScrollView(
           child: Padding(
@@ -83,8 +83,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            Moments(title: "Good Moments", uid: widget.uid)));
+                        builder: (context) => Moments(
+                            title: "Good Moments",
+                            uid: widget.uid,
+                            role: widget.role)));
               }),
               const SizedBox(
                 height: 5,
@@ -94,8 +96,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            Moments(title: "Bad Moments", uid: widget.uid)));
+                        builder: (context) => Moments(
+                            title: "Bad Moments",
+                            uid: widget.uid,
+                            role: widget.role)));
               }),
               const SizedBox(
                 height: 5,
@@ -106,7 +110,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => Moments(
-                            title: "EnjoyFul Moments", uid: widget.uid)));
+                            title: "EnjoyFul Moments",
+                            uid: widget.uid,
+                            role: widget.role)));
               }),
               const SizedBox(
                 height: 5,
@@ -116,8 +122,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            Moments(title: "Other Moments", uid: widget.uid)));
+                        builder: (context) => Moments(
+                            title: "Other Moments",
+                            uid: widget.uid,
+                            role: widget.role)));
               })
             ]),
           ),

@@ -20,7 +20,6 @@ class Utils {
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: const Icon(Icons.paragliding),
           content: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(

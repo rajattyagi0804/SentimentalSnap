@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hey_rajat/Admin/details.dart';
 import 'package:hey_rajat/Auth/auth.dart';
 import 'package:hey_rajat/LoginPage/loginchoice.dart';
+import 'package:hey_rajat/Utils/firebaseUtils.dart';
 import 'package:hey_rajat/Utils/utils.dart';
 import 'package:hey_rajat/WidgetScreen/bottomnav.dart';
 import 'package:hey_rajat/WidgetScreen/widget.dart';
@@ -17,6 +21,7 @@ class AdminScreen extends StatefulWidget {
 class _AdminScreenState extends State<AdminScreen> {
   List user = [];
   bool isload = true;
+
   void getdata() async {
     CollectionReference colRef =
         FirebaseFirestore.instance.collection("heyrajat");
@@ -132,9 +137,54 @@ class _AdminScreenState extends State<AdminScreen> {
                                 color: Colors.white,
                                 fontStyle: FontStyle.italic),
                           ),
-                          trailing: const Icon(
-                            Icons.arrow_forward_ios_rounded,
+                          trailing: PopupMenuButton(
                             color: Colors.white,
+                            onSelected: (value) {
+                              if (value == 1) {
+                                FirebaseUtils()
+                                    .getuserdetails(user[index]['uid'], context)
+                                    .then((value) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              UserDetailsinAdminView(
+                                                uid: user[index]['uid'],
+                                                email: user[index]['email'],
+                                                notespassword: value.toString(),
+                                                usertoken: user[index]['uid'],
+                                              )));
+                                });
+                              }
+                              if (value == 2) {
+                                Utils.alertpopup(
+                                    buttontitle: "Yes",
+                                    context: context,
+                                    title:
+                                        "Are you sure you want to delete all the document?",
+                                    onclick: () {
+                                      FirebaseUtils().deleteDocument(
+                                          user[index]['uid'],
+                                          user[index]['email'],
+                                          context);
+
+                                      Navigator.pop(context);
+                                    });
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              const PopupMenuItem(
+                                  value: 1,
+                                  child: Text(
+                                    "Details",
+                                  )),
+                              const PopupMenuItem(
+                                  value: 2,
+                                  child: Text(
+                                    "Delete all Files",
+                                    style: TextStyle(color: Colors.red),
+                                  )),
+                            ],
                           ),
                         ),
                       );

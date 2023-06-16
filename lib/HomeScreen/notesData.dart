@@ -8,6 +8,7 @@ class NotesData extends StatefulWidget {
   bool lock;
   int index;
   String uid;
+  String password;
 
   NotesData(
       {super.key,
@@ -16,7 +17,8 @@ class NotesData extends StatefulWidget {
       required this.thought,
       required this.lock,
       required this.index,
-      required this.uid});
+      required this.uid,
+      required this.password});
 
   @override
   State<NotesData> createState() => _NotesDataState();
@@ -24,6 +26,7 @@ class NotesData extends StatefulWidget {
 
 class _NotesDataState extends State<NotesData> {
   String val = "no";
+
   void getnotes(String documentId, int index) async {
     CollectionReference colRef = FirebaseFirestore.instance.collection("notes");
     DocumentReference docRef = colRef.doc(documentId);
@@ -37,9 +40,43 @@ class _NotesDataState extends State<NotesData> {
         setState(() {
           widget.title = notesList[index]['title'];
           widget.thought = notesList[index]['thought'];
+          widget.date = notesList[index]['date'];
+          widget.lock = notesList[index]['lock'];
         });
 
         print(notesList);
+      } else {
+        Utils.show_Simple_Snackbar(
+          context,
+          "Contact Rajat at 8273024102",
+        );
+      }
+    } catch (e) {
+      print("Error: $e");
+      // Handle the error here
+    }
+  }
+
+  void updatedata(String documentId, int index, bool newLockValue) async {
+    CollectionReference colRef = FirebaseFirestore.instance.collection("notes");
+    DocumentReference docRef = colRef.doc(documentId);
+
+    try {
+      DocumentSnapshot snapshot = await docRef.get();
+      if (snapshot.exists) {
+        List<dynamic> momentsList = snapshot.get("mynote");
+        if (index >= 0 && index < momentsList.length) {
+          Map<String, dynamic> note = momentsList[index];
+          note["lock"] = newLockValue;
+          momentsList[index] = note;
+
+          await docRef.set({"mynote": momentsList},
+              SetOptions(merge: true)).whenComplete(() {
+            getnotes(documentId, index);
+          });
+        } else {
+          print("Invalid index");
+        }
       } else {
         Utils.show_Simple_Snackbar(
           context,
@@ -79,10 +116,21 @@ class _NotesDataState extends State<NotesData> {
         actions: [
           widget.lock
               ? IconButton(
-                  color: Colors.black,
-                  onPressed: () {},
+                  color: Colors.red,
+                  onPressed: () {
+                    val = "yes";
+                    updatedata(widget.uid, widget.index, false);
+                  },
                   icon: const Icon(Icons.lock))
-              : SizedBox(),
+              : widget.password != ""
+                  ? IconButton(
+                      color: Colors.green,
+                      onPressed: () {
+                        val = "yes";
+                        updatedata(widget.uid, widget.index, true);
+                      },
+                      icon: const Icon(Icons.lock_open))
+                  : SizedBox(),
           IconButton(
               color: Colors.black,
               onPressed: () {

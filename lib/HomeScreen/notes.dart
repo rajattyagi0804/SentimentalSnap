@@ -5,8 +5,8 @@ import 'package:hey_rajat/HomeScreen/notesData.dart';
 import 'package:hey_rajat/Utils/utils.dart';
 
 class Notes extends StatefulWidget {
-  String uid;
-  Notes({super.key, required this.uid});
+  String uid, role;
+  Notes({super.key, required this.uid, required this.role});
 
   @override
   State<Notes> createState() => _NotesState();
@@ -32,6 +32,7 @@ class _NotesState extends State<Notes> {
       DocumentSnapshot snapshot = await docRef.get();
 
       if (snapshot.exists) {
+        notesList.clear();
         notesList = snapshot.get("mynote");
         setState(() {
           password = snapshot.get("password");
@@ -122,7 +123,7 @@ class _NotesState extends State<Notes> {
         backgroundColor: Colors.white,
         centerTitle: true,
         title: const Text(
-          "Write your Notes",
+          "Write your Dairy",
           style: TextStyle(color: Colors.black),
         ),
       ),
@@ -132,7 +133,10 @@ class _NotesState extends State<Notes> {
             )
           : notesList.isEmpty
               ? const Center(
-                  child: Text("No notes found"),
+                  child: Text(
+                    "No notes found",
+                    style: TextStyle(color: Colors.red),
+                  ),
                 )
               : ListView.builder(
                   itemCount: notesList.length,
@@ -141,13 +145,13 @@ class _NotesState extends State<Notes> {
                       padding: const EdgeInsets.all(8.0),
                       child: ListTile(
                           leading: CircleAvatar(
-                            radius: 20,
+                            radius: 25,
                             backgroundColor: Colors.white,
                             child: Text(
                               notesList[index]['title'][0]
                                   .toString()
                                   .toUpperCase(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18),
@@ -158,6 +162,7 @@ class _NotesState extends State<Notes> {
                               side: BorderSide(color: Colors.white)),
                           onTap: () {
                             if (notesList[index]['lock'] == true) {
+                              verifypassword.clear();
                               passwordverification(index, 1);
                             } else {
                               Navigator.push(
@@ -171,6 +176,7 @@ class _NotesState extends State<Notes> {
                                             title: notesList[index]['title'],
                                             index: index,
                                             uid: widget.uid,
+                                            password: password,
                                           ))).then((value) {
                                 if (value == "yes") {
                                   getdata(widget.uid);
@@ -181,15 +187,38 @@ class _NotesState extends State<Notes> {
                           title: Text(
                             notesList[index]['title'],
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
-                          subtitle: Text(
-                            notesList[index]['thought'],
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontStyle: FontStyle.italic),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                          isThreeLine: true,
+                          splashColor: Colors.purple,
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                notesList[index]['date'],
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontStyle: FontStyle.italic),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                notesList[index]['lock']
+                                    ? notesList[index]['thought']
+                                            .toString()
+                                            .substring(0, 4) +
+                                        "......"
+                                    : notesList[index]['thought'],
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontStyle: FontStyle.italic),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ],
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -228,6 +257,16 @@ class _NotesState extends State<Notes> {
                                       changepasswordpassword.clear();
                                       changepassword(index);
                                     }
+                                  } else if (value == 4) {
+                                    Utils.alertpopup(
+                                        buttontitle: "Yes",
+                                        context: context,
+                                        title:
+                                            "Are you sure you want to delete all the document?",
+                                        onclick: () {
+                                          deleteValues(index);
+                                          Navigator.pop(context);
+                                        });
                                   }
                                 },
                                 itemBuilder: (context) => [
@@ -245,6 +284,13 @@ class _NotesState extends State<Notes> {
                                       value: 3,
                                       child: Text(
                                         "Change password",
+                                      )),
+                                  PopupMenuItem(
+                                      enabled:
+                                          widget.role == "Admin" ? true : false,
+                                      value: 4,
+                                      child: const Text(
+                                        "Delete Note",
                                       ))
                                 ],
                               ),
@@ -254,6 +300,9 @@ class _NotesState extends State<Notes> {
                   },
                 ),
       floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.amber,
+          elevation: 20,
+          splashColor: Colors.black,
           onPressed: () {
             Navigator.push(
                 context,
@@ -284,9 +333,9 @@ class _NotesState extends State<Notes> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Text(
+                const Text(
                   "Create your Password",
-                  style: const TextStyle(
+                  style: TextStyle(
                       // color: AppColors.blue,
                       fontSize: 20,
                       fontWeight: FontWeight.bold),
@@ -343,7 +392,7 @@ class _NotesState extends State<Notes> {
                           return null;
                         },
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       TextFormField(
@@ -411,9 +460,9 @@ class _NotesState extends State<Notes> {
                       }
                     }
                   },
-                  child: Text("Create Password"),
+                  child: const Text("Create Password"),
                   style: ElevatedButton.styleFrom(
-                      shape: StadiumBorder(),
+                      shape: const StadiumBorder(),
                       backgroundColor: Colors.deepPurple),
                 ),
                 ElevatedButton(
@@ -422,9 +471,10 @@ class _NotesState extends State<Notes> {
                     newpassword.clear();
                     reenternewpassword.clear();
                   },
-                  child: Text("Cancel"),
+                  child: const Text("Cancel"),
                   style: ElevatedButton.styleFrom(
-                      shape: StadiumBorder(), backgroundColor: Colors.grey),
+                      shape: const StadiumBorder(),
+                      backgroundColor: Colors.grey),
                 )
               ],
             ),
@@ -444,9 +494,9 @@ class _NotesState extends State<Notes> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Text(
+                const Text(
                   "Change your Password",
-                  style: const TextStyle(
+                  style: TextStyle(
                       // color: AppColors.blue,
                       fontSize: 20,
                       fontWeight: FontWeight.bold),
@@ -505,7 +555,7 @@ class _NotesState extends State<Notes> {
                           return null;
                         },
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       TextFormField(
@@ -570,9 +620,9 @@ class _NotesState extends State<Notes> {
                       }
                     }
                   },
-                  child: Text("Change Password"),
+                  child: const Text("Change Password"),
                   style: ElevatedButton.styleFrom(
-                      shape: StadiumBorder(),
+                      shape: const StadiumBorder(),
                       backgroundColor: Colors.deepPurple),
                 ),
                 ElevatedButton(
@@ -581,9 +631,10 @@ class _NotesState extends State<Notes> {
                     previouspassword.clear();
                     changepasswordpassword.clear();
                   },
-                  child: Text("Cancel"),
+                  child: const Text("Cancel"),
                   style: ElevatedButton.styleFrom(
-                      shape: StadiumBorder(), backgroundColor: Colors.grey),
+                      shape: const StadiumBorder(),
+                      backgroundColor: Colors.grey),
                 )
               ],
             ),
@@ -603,9 +654,9 @@ class _NotesState extends State<Notes> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Text(
+                const Text(
                   "Enter your Password",
-                  style: const TextStyle(
+                  style: TextStyle(
                       // color: AppColors.blue,
                       fontSize: 20,
                       fontWeight: FontWeight.bold),
@@ -684,6 +735,7 @@ class _NotesState extends State<Notes> {
                                         title: notesList[index]['title'],
                                         index: index,
                                         uid: widget.uid,
+                                        password: password,
                                       ))).then((value) {
                             if (value == "yes") {
                               getdata(widget.uid);
@@ -698,7 +750,7 @@ class _NotesState extends State<Notes> {
                   },
                   child: Text(check == 1 ? "Open" : "Remove lock"),
                   style: ElevatedButton.styleFrom(
-                      shape: StadiumBorder(),
+                      shape: const StadiumBorder(),
                       backgroundColor: Colors.deepPurple),
                 ),
                 ElevatedButton(
@@ -706,9 +758,10 @@ class _NotesState extends State<Notes> {
                     Navigator.pop(context);
                     verifypassword.clear();
                   },
-                  child: Text("Close"),
+                  child: const Text("Close"),
                   style: ElevatedButton.styleFrom(
-                      shape: StadiumBorder(), backgroundColor: Colors.grey),
+                      shape: const StadiumBorder(),
+                      backgroundColor: Colors.grey),
                 )
               ],
             ),
@@ -716,5 +769,34 @@ class _NotesState extends State<Notes> {
         );
       },
     );
+  }
+
+  void deleteValues(int index) async {
+    CollectionReference colRef = FirebaseFirestore.instance.collection("notes");
+    DocumentReference docRef = colRef.doc(widget.uid);
+
+    try {
+      DocumentSnapshot snapshot = await docRef.get();
+
+      if (snapshot.exists) {
+        List<dynamic> momentsList = snapshot.get("mynote") ?? [];
+
+        if (momentsList.length != 0) {
+          momentsList.removeAt(index);
+          await docRef.set(
+              {"mynote": momentsList}, SetOptions(merge: true)).then((value) {
+            getdata(widget.uid);
+          });
+        }
+      } else {
+        Utils.show_Simple_Snackbar(
+          context,
+          "Contact Rajat at 8273024102",
+        );
+      }
+    } catch (e) {
+      print("Error: $e");
+      // Handle the error here
+    }
   }
 }

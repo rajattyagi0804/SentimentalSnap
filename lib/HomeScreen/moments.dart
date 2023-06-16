@@ -1,14 +1,16 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:hey_rajat/Utils/utils.dart';
 
 class Moments extends StatefulWidget {
-  String title, uid;
-  Moments({super.key, required this.title, required this.uid});
+  String title, uid, role;
+  Moments(
+      {super.key, required this.title, required this.uid, required this.role});
 
   @override
   State<Moments> createState() => _MomentsState();
@@ -16,6 +18,8 @@ class Moments extends StatefulWidget {
 
 class _MomentsState extends State<Moments> {
   List<dynamic> showimagelist = [];
+  List deleteindex = [];
+  List deleteurl = [];
   bool isload = true;
   static final customchache = CacheManager(Config('customCacheKey',
       stalePeriod: const Duration(days: 2), maxNrOfCacheObjects: 100000000));
@@ -54,8 +58,11 @@ class _MomentsState extends State<Moments> {
     DocumentReference docRef = colRef.doc(documentId);
     DocumentSnapshot snapshot = await docRef.get();
     if (snapshot.exists) {
+      showimagelist.clear();
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-      showimagelist = data[key];
+      for (int i = 0; i < data[key].length; i++) {
+        showimagelist.add({"val": data[key][i], "check": false});
+      }
       setState(() {
         isload = false;
       });
@@ -95,6 +102,42 @@ class _MomentsState extends State<Moments> {
           widget.title,
           style: const TextStyle(color: Colors.black),
         ),
+        actions: [
+          deleteselectedcheck()
+              ? IconButton(
+                  onPressed: () {
+                    Utils.alertpopup(
+                        buttontitle: "Yes",
+                        context: context,
+                        title: "Are you sure you want to delete the photos?",
+                        onclick: () {
+                          deleteindex.clear();
+                          deleteurl.clear();
+                          for (var i = 0; i < showimagelist.length; i++) {
+                            if (showimagelist[i]['check']) {
+                              deleteindex.add(i);
+                              deleteurl.add(showimagelist[i]['val']);
+                            }
+                          }
+                          if (widget.title == "Good Moments") {
+                            deletePhotos(deleteurl, deleteindex, 'goodmoments');
+                          } else if (widget.title == "Bad Moments") {
+                            deletePhotos(deleteurl, deleteindex, 'badmoments');
+                          } else if (widget.title == "EnjoyFul Moments") {
+                            deletePhotos(
+                                deleteurl, deleteindex, 'enjoyfulmoments');
+                          } else if (widget.title == "Other Moments") {
+                            deletePhotos(
+                                deleteurl, deleteindex, 'othermoments');
+                          }
+
+                          Navigator.pop(context);
+                        });
+                  },
+                  icon: const Icon(Icons.delete),
+                  color: Colors.black)
+              : const SizedBox()
+        ],
       ),
       body: isload == true
           ? const Center(
@@ -124,7 +167,7 @@ class _MomentsState extends State<Moments> {
                                         child: CachedNetworkImage(
                                           cacheManager: customchache,
                                           key: UniqueKey(),
-                                          imageUrl: showimagelist[index],
+                                          imageUrl: showimagelist[index]['val'],
                                         ),
                                       ),
                                       actionsAlignment:
@@ -140,16 +183,82 @@ class _MomentsState extends State<Moments> {
                                         )
                                       ]));
                         },
-                        child: Container(
-                          decoration: BoxDecoration(border: Border.all()),
-                          child: CachedNetworkImage(
-                              cacheManager: customchache,
-                              key: UniqueKey(),
-                              imageUrl: showimagelist[index],
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) =>
-                                  const Center(child: Text("Loading..."))),
+                        onDoubleTap: () {
+                          if (widget.role == "Admin") {
+                            if (showimagelist[index]['check'] == true) {
+                              setState(() {
+                                showimagelist[index]['check'] = false;
+                              });
+                            } else {
+                              setState(() {
+                                showimagelist[index]['check'] = true;
+                              });
+                            }
+                          }
+                        },
+                        child: Stack(
+                          fit: StackFit.expand,
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(),
+                              ),
+                              child: CachedNetworkImage(
+                                cacheManager: customchache,
+                                key: UniqueKey(),
+                                imageUrl: showimagelist[index]['val'],
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) =>
+                                    const Center(child: Text("Loading...")),
+                              ),
+                            ),
+                            showimagelist[index]['check']
+                                ? Positioned(
+                                    top: 8,
+                                    bottom: 8,
+                                    child: Container(
+                                      height: 50,
+                                      width: 50,
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.red,
+                                      ),
+                                      child: const Icon(
+                                        Icons.check,
+                                        size: 20,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : const SizedBox(),
+                          ],
                         ),
+
+                        // child: Stack(
+                        //   fit: StackFit.expand,
+                        //   alignment: Alignment.center,
+                        //   children: [
+                        //     Container(
+                        //       decoration: BoxDecoration(
+                        //         border: Border.all(),
+                        //       ),
+                        //       child: CachedNetworkImage(
+                        //           cacheManager: customchache,
+                        //           key: UniqueKey(),
+                        //           imageUrl: showimagelist[index]['val'],
+                        //           fit: BoxFit.cover,
+                        //           placeholder: (context, url) =>
+                        //               const Center(child: Text("Loading..."))),
+                        //     ),
+                        //     showimagelist[index]['check']
+                        //         ? CircleAvatar(
+                        //             child: Icon(Icons.check),
+                        //             radius: 20,
+                        //           )
+                        //         : SizedBox()
+                        //   ],
+                        // ),
                       ),
                     );
                   },
@@ -210,5 +319,63 @@ class _MomentsState extends State<Moments> {
         ),
       ),
     );
+  }
+
+  bool deleteselectedcheck() {
+    for (var i = 0; i < showimagelist.length; i++) {
+      if (showimagelist[i]['check'] == true) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void deleteValues(String documentId, List indices, String key) async {
+    print(widget.uid);
+    CollectionReference colRef =
+        FirebaseFirestore.instance.collection("heyrajat");
+    DocumentReference docRef = colRef.doc(documentId);
+    print(indices);
+    try {
+      DocumentSnapshot snapshot = await docRef.get();
+
+      if (snapshot.exists) {
+        List<dynamic> momentsList = snapshot.get(key) ?? [];
+
+        // Sort the indices in descending order to prevent issues with removing elements
+        indices.sort((a, b) => b.compareTo(a));
+        print(indices);
+        print(momentsList);
+        for (int index in indices) {
+          if (index >= 0 && index < momentsList.length) {
+            momentsList.removeAt(index);
+          }
+        }
+        await docRef
+            .set({key: momentsList}, SetOptions(merge: true)).then((value) {
+          getdata(documentId, key);
+        });
+      } else {
+        Utils.show_Simple_Snackbar(
+          context,
+          "Contact Rajat at 8273024102",
+        );
+      }
+    } catch (e) {
+      print("Error: $e");
+      // Handle the error here
+    }
+  }
+
+  Future deletePhotos(List downloadUrl, List deleteindex, String key) async {
+    try {
+      for (String url in downloadUrl) {
+        final Reference photoRef = FirebaseStorage.instance.refFromURL(url);
+        await photoRef.delete();
+      }
+      deleteValues(widget.uid, deleteindex, key);
+    } catch (e) {
+      print('Error deleting photos: $e');
+    }
   }
 }

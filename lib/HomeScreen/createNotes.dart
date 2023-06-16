@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:hey_rajat/HomeScreen/notes.dart';
 import 'package:hey_rajat/Utils/utils.dart';
 import 'package:intl/intl.dart';
 
@@ -33,8 +32,9 @@ class _CreateNoteState extends State<CreateNote> {
         List<dynamic> momentsList = snapshot.get("mynote");
 
         momentsList.add({
-          "date":
-              DateFormat('EEEE, MMM d, yyyy').format(DateTime.now()).toString(),
+          "date": DateFormat('EEEE, MMM d, yyyy, hh:mm a')
+              .format(DateTime.now())
+              .toString(),
           "lock": false,
           "title": title.text.trim().toString().isEmpty
               ? "Notes ${momentsList.length + 1}"
@@ -73,6 +73,9 @@ class _CreateNoteState extends State<CreateNote> {
           Map<String, dynamic> note = momentsList[index];
           note["title"] = title.text.trim().toString();
           note["thought"] = thought.text.trim().toString();
+          note["date"] = DateFormat('EEEE, MMM d, yyyy, hh:mm a')
+              .format(DateTime.now())
+              .toString();
           momentsList[index] = note;
 
           await docRef.set({"mynote": momentsList},
@@ -108,11 +111,12 @@ class _CreateNoteState extends State<CreateNote> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        leading: BackButton(color: Colors.black),
+        backgroundColor: Colors.white,
         centerTitle: true,
-        title: Text(
+        title: const Text(
           "Start writting...",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.black),
         ),
       ),
       body: SingleChildScrollView(
@@ -128,7 +132,7 @@ class _CreateNoteState extends State<CreateNote> {
                     decoration: const BoxDecoration(
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: AssetImage("images/new.jpg"),
+                        image: AssetImage("images/notesbackground.jpg"),
                       ),
                     ),
                   ),
@@ -139,37 +143,38 @@ class _CreateNoteState extends State<CreateNote> {
                       children: [
                         Text(
                           widget.from == "edit" ? "Update Title" : "Title",
-                          style: TextStyle(color: Colors.white, fontSize: 30),
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 30),
                         ),
                         const SizedBox(
                           height: 10,
                         ),
                         TextFormField(
                           style: const TextStyle(
-                              color: Colors.white, fontSize: 17),
+                              color: Colors.black, fontSize: 17),
                           controller: title,
                           keyboardType: TextInputType.text,
                           decoration: InputDecoration(
                             // Add prefix icon
-                            focusColor: Colors.white,
+                            focusColor: Colors.black,
 
                             // Set the border outline color
                             enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.white),
+                              borderSide: const BorderSide(color: Colors.black),
                               borderRadius: BorderRadius.circular(10.0),
                             ),
 
                             // Set the focused border outline color
                             focusedBorder: OutlineInputBorder(
                               borderSide: const BorderSide(
-                                  color: Colors.white, width: 1.0),
+                                  color: Colors.black, width: 1.0),
                               borderRadius: BorderRadius.circular(10.0),
                             ),
 
-                            fillColor: Colors.grey,
+                            fillColor: Colors.black,
                             hintText: "Enter Your title",
                             hintStyle: const TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 16,
                               fontFamily: "verdana_regular",
                               fontWeight: FontWeight.w400,
@@ -178,18 +183,12 @@ class _CreateNoteState extends State<CreateNote> {
                                 ? "Update Title"
                                 : "Title",
                             labelStyle: const TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 16,
                               fontFamily: "verdana_regular",
                               fontWeight: FontWeight.w400,
                             ),
                           ),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Enter Email id';
-                            }
-                            return null;
-                          },
                         ),
                       ],
                     ),
@@ -199,10 +198,10 @@ class _CreateNoteState extends State<CreateNote> {
               const SizedBox(
                 height: 20,
               ),
-              TextFormField(
+              TextField(
                 style: const TextStyle(color: Colors.black, fontSize: 17),
                 controller: thought,
-                keyboardType: TextInputType.text,
+                keyboardType: TextInputType.multiline,
                 maxLines: 12,
                 decoration: InputDecoration(
                   focusColor: Colors.black,
@@ -229,20 +228,14 @@ class _CreateNoteState extends State<CreateNote> {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Enter Email id';
-                  }
-                  return null;
-                },
-              ),
+              )
             ]),
             widget.from == "edit"
                 ? ElevatedButton(
                     onPressed: () {
                       updatedata(widget.uid, widget.index);
                     },
-                    child: Text("Update"),
+                    child: const Text("Update"),
                     style: ElevatedButton.styleFrom(
                         fixedSize: const Size.fromWidth(200),
                         backgroundColor: Colors.purple,
@@ -252,7 +245,7 @@ class _CreateNoteState extends State<CreateNote> {
                     onPressed: () {
                       addData(widget.uid, "mynote");
                     },
-                    child: Text("Save"),
+                    child: const Text("Save"),
                     style: ElevatedButton.styleFrom(
                         fixedSize: const Size.fromWidth(200),
                         backgroundColor: Colors.purple,

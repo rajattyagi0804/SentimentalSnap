@@ -33,7 +33,7 @@ class Auth {
                     builder: (BuildContext context) => const AdminScreen()),
                 ModalRoute.withName('/'));
           } else {
-            Utils.show_Simple_Snackbar(context, "Sorry your not admin");
+            Utils.show_Simple_Snackbar(context, "Sorry you are not admin");
             signOut();
           }
         } else {

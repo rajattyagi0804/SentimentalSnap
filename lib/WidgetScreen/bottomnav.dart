@@ -22,6 +22,7 @@ class _BottomNavstate extends State<BottomNav> {
     ),
     Notes(
       uid: widget.uid.toString(),
+      role: widget.role,
     ),
   ];
 
@@ -33,7 +34,13 @@ class _BottomNavstate extends State<BottomNav> {
       ),
       bottomNavigationBar: BottomNavigationBar(
           elevation: 30,
+          useLegacyColorScheme: true,
           type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.indigo,
+          selectedItemColor: Colors.yellow,
+          unselectedItemColor: Colors.white,
+          selectedIconTheme: IconThemeData(color: Colors.yellow),
+          unselectedIconTheme: IconThemeData(color: Colors.white),
           showSelectedLabels: true,
           onTap: (index) {
             setState(() {
@@ -41,14 +48,22 @@ class _BottomNavstate extends State<BottomNav> {
             });
           },
           currentIndex: myIndex,
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.memory_rounded),
+              icon: Image.asset(
+                'images/camera.jpeg',
+                width: 25,
+                height: 25,
+              ),
               label: "Moments",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.notes),
-              label: "Notes",
+              icon: Image.asset(
+                'images/dairyimage.png',
+                width: 25,
+                height: 25,
+              ),
+              label: "Dairy",
             ),
           ]),
     );
