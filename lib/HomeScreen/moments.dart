@@ -234,31 +234,6 @@ class _MomentsState extends State<Moments> {
                                 : const SizedBox(),
                           ],
                         ),
-
-                        // child: Stack(
-                        //   fit: StackFit.expand,
-                        //   alignment: Alignment.center,
-                        //   children: [
-                        //     Container(
-                        //       decoration: BoxDecoration(
-                        //         border: Border.all(),
-                        //       ),
-                        //       child: CachedNetworkImage(
-                        //           cacheManager: customchache,
-                        //           key: UniqueKey(),
-                        //           imageUrl: showimagelist[index]['val'],
-                        //           fit: BoxFit.cover,
-                        //           placeholder: (context, url) =>
-                        //               const Center(child: Text("Loading..."))),
-                        //     ),
-                        //     showimagelist[index]['check']
-                        //         ? CircleAvatar(
-                        //             child: Icon(Icons.check),
-                        //             radius: 20,
-                        //           )
-                        //         : SizedBox()
-                        //   ],
-                        // ),
                       ),
                     );
                   },
