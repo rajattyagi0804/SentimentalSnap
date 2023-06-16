@@ -240,14 +240,13 @@ class _NotesState extends State<Notes> {
                                     } else {
                                       if (notesList[index]['lock'] == false) {
                                         updatedata(widget.uid, index, true);
+                                      } else if (notesList[index]['lock'] ==
+                                          true) {
+                                        verifypassword.clear();
+                                        passwordverification(index, 2);
                                       }
                                     }
                                   } else if (value == 2) {
-                                    if (notesList[index]['lock'] == true) {
-                                      verifypassword.clear();
-                                      passwordverification(index, 2);
-                                    }
-                                  } else if (value == 3) {
                                     if (password == "") {
                                       newpassword.clear();
                                       reenternewpassword.clear();
@@ -257,7 +256,7 @@ class _NotesState extends State<Notes> {
                                       changepasswordpassword.clear();
                                       changepassword(index);
                                     }
-                                  } else if (value == 4) {
+                                  } else if (value == 3) {
                                     Utils.alertpopup(
                                         buttontitle: "Yes",
                                         context: context,
@@ -270,25 +269,22 @@ class _NotesState extends State<Notes> {
                                   }
                                 },
                                 itemBuilder: (context) => [
-                                  const PopupMenuItem(
+                                  PopupMenuItem(
                                       value: 1,
                                       child: Text(
-                                        "Lock",
+                                        notesList[index]['lock']
+                                            ? "Unlock"
+                                            : "Lock",
                                       )),
                                   const PopupMenuItem(
                                       value: 2,
-                                      child: Text(
-                                        "Remove Lock",
-                                      )),
-                                  const PopupMenuItem(
-                                      value: 3,
                                       child: Text(
                                         "Change password",
                                       )),
                                   PopupMenuItem(
                                       enabled:
                                           widget.role == "Admin" ? true : false,
-                                      value: 4,
+                                      value: 3,
                                       child: const Text(
                                         "Delete Note",
                                       ))
