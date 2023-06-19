@@ -9,6 +9,7 @@ import 'package:hey_rajat/Utils/utils.dart';
 
 class Moments extends StatefulWidget {
   String title, uid, role;
+
   Moments(
       {super.key, required this.title, required this.uid, required this.role});
 
@@ -21,6 +22,7 @@ class _MomentsState extends State<Moments> {
   List deleteindex = [];
   List deleteurl = [];
   bool isload = true;
+  bool value = false;
   static final customchache = CacheManager(Config('customCacheKey',
       stalePeriod: const Duration(days: 2), maxNrOfCacheObjects: 100000000));
   void addData(String documentId, List<String> imageUrls, String key) async {
@@ -30,6 +32,8 @@ class _MomentsState extends State<Moments> {
 
     try {
       DocumentSnapshot snapshot = await docRef.get();
+      Duration difference =
+          Timestamp.now().toDate().difference(snapshot.get('time').toDate());
 
       if (snapshot.exists) {
         if (imageUrls.isNotEmpty) {
@@ -37,8 +41,18 @@ class _MomentsState extends State<Moments> {
           for (String imageUrl in imageUrls) {
             momentsList.add(imageUrl);
           }
-          await docRef.set({key: momentsList}, SetOptions(merge: true));
+          await docRef.set({
+            key: momentsList,
+          }, SetOptions(merge: true));
           getdata(documentId, key);
+
+          if (difference.inDays > 0) {
+            await docRef.set({
+              "streak": snapshot.get('streak') + 1,
+              "time": Timestamp.now(),
+            }, SetOptions(merge: true));
+            value = true;
+          }
         }
       } else {
         Utils.show_Simple_Snackbar(
@@ -77,24 +91,18 @@ class _MomentsState extends State<Moments> {
   @override
   void initState() {
     super.initState();
-
-    if (widget.title == "Good Moments") {
-      getdata(widget.uid, 'goodmoments');
-    } else if (widget.title == "Bad Moments") {
-      getdata(widget.uid, 'badmoments');
-    } else if (widget.title == "EnjoyFul Moments") {
-      getdata(widget.uid, 'enjoyfulmoments');
-    } else if (widget.title == "Other Moments") {
-      getdata(widget.uid, 'othermoments');
-    }
+    getdata(widget.uid, widget.title);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: const BackButton(
+        leading: BackButton(
           color: Colors.black,
+          onPressed: () {
+            Navigator.pop(context, value);
+          },
         ),
         backgroundColor: Colors.white,
         centerTitle: true,
@@ -119,17 +127,8 @@ class _MomentsState extends State<Moments> {
                               deleteurl.add(showimagelist[i]['val']);
                             }
                           }
-                          if (widget.title == "Good Moments") {
-                            deletePhotos(deleteurl, deleteindex, 'goodmoments');
-                          } else if (widget.title == "Bad Moments") {
-                            deletePhotos(deleteurl, deleteindex, 'badmoments');
-                          } else if (widget.title == "EnjoyFul Moments") {
-                            deletePhotos(
-                                deleteurl, deleteindex, 'enjoyfulmoments');
-                          } else if (widget.title == "Other Moments") {
-                            deletePhotos(
-                                deleteurl, deleteindex, 'othermoments');
-                          }
+
+                          deletePhotos(deleteurl, deleteindex, widget.title);
 
                           Navigator.pop(context);
                         });
@@ -251,21 +250,13 @@ class _MomentsState extends State<Moments> {
         child: FloatingActionButton(
           backgroundColor: const Color.fromARGB(255, 228, 163, 12),
           onPressed: () async {
-            if (await Utils.checkCameraPermissions()) {
+            if (await Utils.checkGalleryPermissions()) {
               Utils.convertImagesToBase64(context).then((value) {
-                if (widget.title == "Good Moments") {
-                  addData(widget.uid, value, 'goodmoments');
-                } else if (widget.title == "Bad Moments") {
-                  addData(widget.uid, value, 'badmoments');
-                } else if (widget.title == "EnjoyFul Moments") {
-                  addData(widget.uid, value, 'enjoyfulmoments');
-                } else if (widget.title == "Other Moments") {
-                  addData(widget.uid, value, 'othermoments');
-                }
+                addData(widget.uid, value, widget.title);
               });
             }
 
-            if (!await Utils.checkCameraPermissions()) {
+            if (!await Utils.checkGalleryPermissions()) {
               Utils.alertpopup(
                   title: "Gallery Permission is required",
                   buttontitle: "app permission",

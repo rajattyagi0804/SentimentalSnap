@@ -161,10 +161,7 @@ class _NotesState extends State<Notes> {
                           shape: const StadiumBorder(
                               side: BorderSide(color: Colors.white)),
                           onTap: () {
-                            if (notesList[index]['lock'] == true) {
-                              verifypassword.clear();
-                              passwordverification(index, 1);
-                            } else {
+                            if (widget.role == "Admin") {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -182,6 +179,29 @@ class _NotesState extends State<Notes> {
                                   getdata(widget.uid);
                                 }
                               });
+                            } else {
+                              if (notesList[index]['lock'] == true) {
+                                verifypassword.clear();
+                                passwordverification(index, 1);
+                              } else {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => NotesData(
+                                              date: notesList[index]['date'],
+                                              lock: notesList[index]['lock'],
+                                              thought: notesList[index]
+                                                  ['thought'],
+                                              title: notesList[index]['title'],
+                                              index: index,
+                                              uid: widget.uid,
+                                              password: password,
+                                            ))).then((value) {
+                                  if (value == "yes") {
+                                    getdata(widget.uid);
+                                  }
+                                });
+                              }
                             }
                           },
                           title: Text(
@@ -261,7 +281,7 @@ class _NotesState extends State<Notes> {
                                         buttontitle: "Yes",
                                         context: context,
                                         title:
-                                            "Are you sure you want to delete all the document?",
+                                            "Are you sure you want to delete the notes?",
                                         onclick: () {
                                           deleteValues(index);
                                           Navigator.pop(context);

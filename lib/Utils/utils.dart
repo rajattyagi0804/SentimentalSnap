@@ -19,53 +19,47 @@ class Utils {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          content: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ],
-            ),
+        return AlertDialog(
+          title: Text(
+            title,
+            style: const TextStyle(fontSize: 14),
           ),
+          actionsAlignment: MainAxisAlignment.center,
+          shape: const StadiumBorder(),
           actions: <Widget>[
-            CupertinoDialogAction(
+            ElevatedButton(
               onPressed: onclick,
               child: Text(buttontitle),
-              isDefaultAction: true,
             ),
-            CupertinoDialogAction(
+            ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
               },
               child: const Text("No"),
-              isDestructiveAction: true,
-            ),
+            )
           ],
         );
       },
     );
   }
 
-  //for Camera permisiion
-
-  static Future<bool> checkCameraPermissions() async {
+  static Future<bool> checkGalleryPermissions() async {
     PermissionStatus status = await Permission.storage.status;
-
     if (status.isGranted) {
       return true;
     }
-    if (status.isDenied) {
+
+    if (status.isDenied || status.isPermanentlyDenied) {
       PermissionStatus newStatus = await Permission.storage.request();
-      if (status.isDenied) {
+
+      if (newStatus.isGranted) {
+        return true;
+      } else {
         return false;
       }
     }
 
-    return true;
+    return false;
   }
 
   static Future<String> uploadImageToStorage(
@@ -121,6 +115,42 @@ class Utils {
     }
   }
 
+  static Future<String> backgroundimageupload(
+    List<int> imageBytes,
+  ) async {
+    try {
+      // Generate a unique filename for the image
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+      // Create a reference to the Firebase Storage location
+      firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref().child(fileName);
+
+      // Convert the image bytes to a Uint8List
+      Uint8List uint8List = Uint8List.fromList(imageBytes);
+
+      // Upload the image data to Firebase Storage
+      firebase_storage.UploadTask uploadTask = storageRef.putData(uint8List);
+
+      // Listen to the task snapshot for progress updates
+      uploadTask.snapshotEvents
+          .listen((firebase_storage.TaskSnapshot snapshot) {
+        double totalProgress = 0.0;
+      });
+
+      // Wait for the upload task to complete
+      await uploadTask;
+
+      // Get the download URL of the uploaded image
+      String imageUrl = await storageRef.getDownloadURL();
+
+      return imageUrl;
+    } catch (e) {
+      print("Error uploading image: $e");
+      return "";
+    }
+  }
+
   static Future<List<String>> convertImagesToBase64(
       BuildContext context) async {
     List<Asset> assets = [];
@@ -152,7 +182,7 @@ class Utils {
           height: 36.0,
           child: Transform.scale(
             scale: 0.7, // Adjust the scale value as needed
-            child: CircularProgressIndicator(
+            child: const CircularProgressIndicator(
               strokeWidth: 3.0,
             ),
           ),
@@ -205,8 +235,8 @@ class Utils {
 
   static show_Simple_Snackbar(BuildContext context, String? message) {
     Flushbar(
-      duration: Duration(seconds: 3),
-      backgroundColor: Color.fromARGB(255, 230, 225, 225),
+      duration: const Duration(seconds: 3),
+      backgroundColor: const Color.fromARGB(255, 230, 225, 225),
       message: message,
       messageColor: Colors.red,
     )..show(context);

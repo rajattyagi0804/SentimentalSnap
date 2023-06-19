@@ -18,7 +18,7 @@ class _UserDetailsinAdminViewState extends State<UserDetailsinAdminView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(color: Colors.black),
+        leading: const BackButton(color: Colors.black),
         backgroundColor: Colors.white,
         title: Text(
           widget.email
@@ -40,7 +40,7 @@ class _UserDetailsinAdminViewState extends State<UserDetailsinAdminView> {
                     .all(), // Allows to add a border decoration around your table
                 children: [
                   TableRow(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.yellow,
                       ),
                       children: [
@@ -124,7 +124,7 @@ class _UserDetailsinAdminViewState extends State<UserDetailsinAdminView> {
                           vertical: 8.0, horizontal: 5),
                       child: widget.notespassword != ""
                           ? Text(widget.notespassword)
-                          : Text(
+                          : const Text(
                               "Not Created Yet",
                               style: TextStyle(color: Colors.red),
                             ),

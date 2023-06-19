@@ -68,10 +68,11 @@ class Auth {
     if (!docExists) {
       await docRef.set({
         'email': email,
-        'badmoments': [],
-        'enjoyfulmoments': [],
+        'arraychecker': 1,
+        'time': DateTime.now(),
+        'streak': 0,
         'goodmoments': [],
-        'othermoments': []
+        'background': ""
       });
     }
     if (!notesdocExists) {

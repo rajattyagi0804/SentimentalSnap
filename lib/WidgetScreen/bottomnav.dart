@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hey_rajat/HomeScreen/dashboard.dart';
 import 'package:hey_rajat/HomeScreen/notes.dart';
+import 'package:hey_rajat/HomeScreen/profile.dart';
 
 class BottomNav extends StatefulWidget {
   String uid, email, role;
@@ -24,6 +25,10 @@ class _BottomNavstate extends State<BottomNav> {
       uid: widget.uid.toString(),
       role: widget.role,
     ),
+    Profile(
+      role: widget.role,
+      email: widget.email.toString(),
+    )
   ];
 
   @override
@@ -64,6 +69,10 @@ class _BottomNavstate extends State<BottomNav> {
                 height: 25,
               ),
               label: "Dairy",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: "Profile",
             ),
           ]),
     );
