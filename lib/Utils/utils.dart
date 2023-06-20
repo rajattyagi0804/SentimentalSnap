@@ -25,7 +25,6 @@ class Utils {
             style: const TextStyle(fontSize: 14),
           ),
           actionsAlignment: MainAxisAlignment.center,
-          shape: const StadiumBorder(),
           actions: <Widget>[
             ElevatedButton(
               onPressed: onclick,
@@ -227,18 +226,28 @@ class Utils {
     return compressedBytes;
   }
 
-  static Future getuid() async {
-    final SharedPreferences sp = await SharedPreferences.getInstance();
-    final String uid = sp.getString("uid")!;
-    return uid;
-  }
-
   static show_Simple_Snackbar(BuildContext context, String? message) {
-    Flushbar(
+    return Flushbar(
+      flushbarPosition: FlushbarPosition.BOTTOM,
+      backgroundColor: Color.fromARGB(240, 243, 250, 255),
       duration: const Duration(seconds: 3),
-      backgroundColor: const Color.fromARGB(255, 230, 225, 225),
-      message: message,
-      messageColor: Colors.red,
-    )..show(context);
+      flushbarStyle: FlushbarStyle.FLOATING,
+      messageColor: Colors.blue,
+      positionOffset: 5.0,
+      margin: const EdgeInsets.symmetric(
+        horizontal: 10,
+      ),
+      borderRadius: BorderRadius.circular(5),
+      forwardAnimationCurve: Curves.linearToEaseOut,
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+      boxShadows: const [
+        BoxShadow(
+          color: Color.fromARGB(166, 195, 201, 206),
+          offset: Offset(5, 5),
+          blurRadius: 3,
+        ),
+      ],
+      message: message ?? "",
+    ).show(context);
   }
 }

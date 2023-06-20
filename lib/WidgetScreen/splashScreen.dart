@@ -19,13 +19,14 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     Timer(
-        Duration(seconds: 3),
-        () => WidgetScreen().gettoken().then((value) {
+        const Duration(seconds: 3),
+        () => WidgetScreen().getSharedprefrenceValue().then((value) {
               if (value['role'] == "") {
                 Navigator.pushReplacement(
                     context,
                     CupertinoPageRoute(
-                        builder: (BuildContext context) => LoginScreen()));
+                        builder: (BuildContext context) =>
+                            const LoginScreen()));
               } else if (value['role'] == "Admin") {
                 Navigator.pushReplacement(
                   context,
@@ -33,16 +34,14 @@ class _SplashScreenState extends State<SplashScreen> {
                       builder: (BuildContext context) => const AdminScreen()),
                 );
               } else {
-                Utils.getuid().then((valuek) {
-                  Navigator.pushReplacement(
-                      context,
-                      CupertinoPageRoute(
-                          builder: (BuildContext context) => BottomNav(
-                                uid: valuek,
-                                role: value['role'],
-                                email: value['email'],
-                              )));
-                });
+                Navigator.pushReplacement(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (BuildContext context) => BottomNav(
+                              uid: value['uid'],
+                              role: value['role'],
+                              email: value['email'],
+                            )));
               }
             }));
   }

@@ -26,9 +26,9 @@ class _BottomNavstate extends State<BottomNav> {
       role: widget.role,
     ),
     Profile(
-      role: widget.role,
-      email: widget.email.toString(),
-    )
+        role: widget.role,
+        email: widget.email.toString(),
+        uid: widget.uid.toString())
   ];
 
   @override

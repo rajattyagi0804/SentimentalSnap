@@ -67,12 +67,17 @@ class Auth {
         await notesdocref.get().then((docSnapshot) => docSnapshot.exists);
     if (!docExists) {
       await docRef.set({
+        "7days": false,
+        "30days": false,
+        "90days": false,
+        "180days": false,
+        "365days": false,
         'email': email,
-        'arraychecker': 1,
-        'time': DateTime.now(),
+        'time': Timestamp.fromMillisecondsSinceEpoch(168717353641),
         'streak': 0,
         'goodmoments': [],
-        'background': ""
+        'background':
+            "https://firebasestorage.googleapis.com/v0/b/hey-rajat.appspot.com/o/whitebackground.jpeg?alt=media&token=58598a87-88f5-4d28-bc7d-e76e4211e609"
       });
     }
     if (!notesdocExists) {

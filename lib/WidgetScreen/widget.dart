@@ -1,16 +1,17 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WidgetScreen {
-  Future gettoken() async {
+  Future getSharedprefrenceValue() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     final String role = sp.getString("role") ?? "";
     final String email = sp.getString("email") ?? "";
+    final String uid = sp.getString("uid") ?? "";
 
     if (role.isNotEmpty) {
       if (role == "Admin") {
-        return {"role": "Admin", "email": email};
+        return {"role": "Admin", "email": email, "uid": uid};
       } else {
-        return {"role": "User", "email": email};
+        return {"role": "User", "email": email, "uid": uid};
       }
     }
 

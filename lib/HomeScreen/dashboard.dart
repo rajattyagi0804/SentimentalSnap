@@ -1,8 +1,11 @@
 import 'dart:convert';
 
 import 'package:app_settings/app_settings.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:hey_rajat/HomeScreen/moments.dart';
 import 'package:hey_rajat/Utils/utils.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,10 +22,11 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   final GlobalKey<FormState> _FormKey = GlobalKey<FormState>();
   TextEditingController newmoment = TextEditingController();
-  int arraychecker = 1;
   bool isload = true;
   int streak = 0;
   int diff = 2;
+  String background =
+      "https://firebasestorage.googleapis.com/v0/b/hey-rajat.appspot.com/o/whitebackground.jpeg?alt=media&token=58598a87-88f5-4d28-bc7d-e76e4211e609";
 
   void adddata(String documentId, String arrayname) async {
     CollectionReference colRef =
@@ -32,7 +36,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (snapshot.exists) {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       data[arrayname] = [];
-      data["arraychecker"] = snapshot.get('arraychecker') + 1;
       await docRef.set(data, SetOptions(merge: true)).whenComplete(() {
         setState(() {
           isload = false;
@@ -88,6 +91,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
+  void updatebackground(String documentId, String backgroundstring) async {
+    CollectionReference colRef =
+        FirebaseFirestore.instance.collection("heyrajat");
+    DocumentReference docRef = colRef.doc(documentId);
+    DocumentSnapshot snapshot = await docRef.get();
+    if (snapshot.exists) {
+      List url = [snapshot.get("background")];
+      deletePhotos(url);
+      await docRef.set({"background": backgroundstring},
+          SetOptions(merge: true)).whenComplete(() {
+        setState(() {
+          isload = false;
+          getdata(documentId);
+        });
+      });
+    } else {
+      Utils.show_Simple_Snackbar(
+        context,
+        "Contact Rajat at 8273024102",
+      );
+    }
+  }
+
   List momentarray = [];
   void getdata(String documentId) async {
     CollectionReference colRef =
@@ -105,12 +131,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
       data.forEach((key, value) {
         if (key != "email" &&
-            key != "arraychecker" &&
             key != "time" &&
-            key != "streak") {
+            key != "streak" &&
+            key != "background" &&
+            key != "7days" &&
+            key != "30days" &&
+            key != "90days" &&
+            key != "180days" &&
+            key != "365days") {
           momentarray.add(key);
-        } else if (key == "arraychecker") {
-          arraychecker = value;
+        } else if (key == "background") {
+          background = value;
         } else if (key == "streak") {
           if (difference.inDays > 1) {
             streak = 0;
@@ -138,6 +169,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     getdata(widget.uid);
   }
 
+  static final customchache = CacheManager(Config('customCacheKey',
+      stalePeriod: const Duration(days: 2), maxNrOfCacheObjects: 100000000));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -190,7 +223,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               if (value == 1) {
                 if (await Utils.checkGalleryPermissions()) {
                   imageOnClick().then((value) {
-                    print(value);
+                    if (value != null) {
+                      updatebackground(widget.uid, value);
+                    }
                   });
                 }
 
@@ -205,6 +240,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       });
                 }
               }
+              if (value == 2) {
+                updatebackground(widget.uid,
+                    "https://firebasestorage.googleapis.com/v0/b/hey-rajat.appspot.com/o/whitebackground.jpeg?alt=media&token=58598a87-88f5-4d28-bc7d-e76e4211e609");
+
+                Utils.show_Simple_Snackbar(
+                    context, "Background remove successfully");
+              }
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
@@ -212,31 +254,99 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Text(
                     "Change Background",
                   )),
+              const PopupMenuItem(
+                  value: 2,
+                  child: Text(
+                    "Remove Background",
+                  )),
             ],
           ),
         ],
       ),
-      body: Container(
-        alignment: Alignment.center,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage("images/bg.jpg"), fit: BoxFit.fill),
-        ),
-        child: SingleChildScrollView(
-          child: Padding(
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: CachedNetworkImageProvider(
+                  background,
+                  cacheManager: customchache,
+                ),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Padding(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
             child: isload
-                ? const CircularProgressIndicator()
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                        ListView.builder(
-                          itemCount: momentarray.length,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                listtile(momentarray[index], onclick: () {
+                ? const Center(child: CircularProgressIndicator())
+                : Column(children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: momentarray.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Dismissible(
+                                key: UniqueKey(),
+                                direction: DismissDirection.horizontal,
+                                background: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(20)),
+                                  // color: const Color.fromARGB(255, 64, 122, 67),
+                                  alignment: Alignment.centerLeft,
+                                  padding: const EdgeInsets.only(left: 16.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Icon(Icons.delete, color: Colors.white),
+                                      Text(
+                                        "Delete",
+                                        style: TextStyle(color: Colors.white),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                secondaryBackground: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.orange,
+                                      borderRadius: BorderRadius.circular(20)),
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.only(right: 16.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Icon(Icons.edit, color: Colors.white),
+                                      Text(
+                                        "Edit",
+                                        style: TextStyle(color: Colors.white),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                confirmDismiss: (direction) async {
+                                  if (direction ==
+                                      DismissDirection.endToStart) {
+                                    newmoment.clear();
+                                    createneewMOment(2, index);
+                                  } else if (direction ==
+                                      DismissDirection.startToEnd) {
+                                    Utils.alertpopup(
+                                        title:
+                                            "Are you Sure you want to delete your ${momentarray[index]} Moment?",
+                                        buttontitle: "Yes",
+                                        context: context,
+                                        onclick: () {
+                                          deletemoment(
+                                              widget.uid, momentarray[index]);
+                                          Navigator.pop(context);
+                                        });
+                                  }
+                                },
+                                child:
+                                    listtile(momentarray[index], onclick: () {
                                   Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -249,51 +359,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       getdata(widget.uid);
                                     }
                                   });
-                                }, editclick: () {
-                                  newmoment.clear();
-                                  createneewMOment(2, index);
-                                }),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                              ],
-                            );
-                          },
+                                })),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        newmoment.clear();
+                        createneewMOment(1, 0);
+                      },
+                      child: Container(
+                        height: 65,
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            color: Colors.grey,
+                            border: Border.all(color: Colors.white),
+                            borderRadius: BorderRadius.circular(20)),
+                        child: const Text(
+                          "+ Add new Moment",
+                          style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        arraychecker <= 3
-                            ? GestureDetector(
-                                onTap: () {
-                                  newmoment.clear();
-                                  createneewMOment(1, 0);
-                                },
-                                child: Container(
-                                  height: 65,
-                                  width: double.infinity,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      border: Border.all(color: Colors.white),
-                                      borderRadius: BorderRadius.circular(20)),
-                                  child: const Text(
-                                    "+ Add new Moment",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
-                                ),
-                              )
-                            : const SizedBox()
-                      ]),
+                      ),
+                    )
+                  ]),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget listtile(String title,
-      {required VoidCallback onclick, required VoidCallback editclick}) {
+  Widget listtile(String title, {required VoidCallback onclick}) {
     return GestureDetector(
         onTap: onclick,
         child: Container(
@@ -321,19 +421,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Text(title[0].toUpperCase()),
               ),
             ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  onPressed: editclick,
-                  icon: const Icon(Icons.edit),
-                  color: Colors.white,
-                ),
-                const Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: Colors.white,
-                ),
-              ],
+            trailing: const Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: Colors.white,
             ),
           ),
         ));
@@ -430,10 +520,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Navigator.pop(context);
                     }
                   },
-                  child: Text(ck == 1 ? "Create Moment" : "Update"),
                   style: ElevatedButton.styleFrom(
                       shape: const StadiumBorder(),
                       backgroundColor: Colors.deepPurple),
+                  child: Text(ck == 1 ? "Create Moment" : "Update"),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -441,10 +531,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     newmoment.clear();
                     // reenternewpassword.clear();
                   },
-                  child: const Text("Cancel"),
                   style: ElevatedButton.styleFrom(
                       shape: const StadiumBorder(),
                       backgroundColor: Colors.grey),
+                  child: const Text("Cancel"),
                 )
               ],
             ),
@@ -456,8 +546,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   check(String value) {
     for (var i = 0; i < momentarray.length; i++) {
-      print(momentarray);
-      if (momentarray[i] == value) {
+      if (momentarray[i] == value ||
+          value == "background" ||
+          value == "streak" ||
+          value == "email" ||
+          value == "7days" ||
+          value == "30days" ||
+          value == "90days" ||
+          value == "180days" ||
+          value == "365days") {
         return "Please choose another name this name already exists";
       }
     }
@@ -478,6 +575,53 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return Utils.backgroundimageupload(imageBytes);
     } else {
       return null;
+    }
+  }
+
+  Future deletePhotos(List downloadUrl) async {
+    try {
+      for (String url in downloadUrl) {
+        final Reference photoRef = FirebaseStorage.instance.refFromURL(url);
+        await photoRef.delete();
+      }
+    } catch (e) {
+      print('Error deleting photos: $e');
+    }
+  }
+
+  void deletemoment(String documentId, String oldArrayName) async {
+    CollectionReference colRef =
+        FirebaseFirestore.instance.collection("heyrajat");
+    DocumentReference docRef = colRef.doc(documentId);
+    DocumentSnapshot snapshot = await docRef.get();
+    if (snapshot.exists) {
+      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+      if (data.containsKey(oldArrayName)) {
+        // Get the array value
+        List<dynamic> arrayValue = data[oldArrayName];
+
+        // Remove the old array from the data
+        data.remove(oldArrayName);
+
+        // Update the document with the modified data
+        await docRef.set(data).whenComplete(() {
+          setState(() {
+            deletePhotos(arrayValue);
+            isload = false;
+            getdata(documentId);
+          });
+        });
+      } else {
+        Utils.show_Simple_Snackbar(
+          context,
+          "The old array name does not exist.",
+        );
+      }
+    } else {
+      Utils.show_Simple_Snackbar(
+        context,
+        "Contact Rajat at 8273024102",
+      );
     }
   }
 }

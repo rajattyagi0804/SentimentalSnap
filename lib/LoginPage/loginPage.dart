@@ -12,7 +12,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _isHidden = true;
-  bool islogin = true;
+
+  bool isload = false;
   String? errormessage = "";
   final TextEditingController _emailcontroller = TextEditingController();
   final TextEditingController _passwordcontroller = TextEditingController();
@@ -28,6 +29,9 @@ class _LoginScreenState extends State<LoginScreen> {
     } on FirebaseAuthException catch (e) {
       errormessage = e.message;
       Utils.show_Simple_Snackbar(context, errormessage);
+      setState(() {
+        isload = false;
+      });
     }
   }
 
@@ -188,16 +192,26 @@ class _LoginScreenState extends State<LoginScreen> {
                         final isValidForm = _FormKey.currentState!.validate();
                         if (isValidForm) {
                           signInwithEmailandPassword();
+                          setState(() {
+                            isload = true;
+                          });
                         }
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.amber[700],
                           shape: const StadiumBorder(),
                           minimumSize: const Size(120, 40)),
-                      child: const Text(
-                        "Log In",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      child: isload
+                          ? Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                              ),
+                            )
+                          : Text(
+                              "Log In",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                     )
                   ],
                 ),

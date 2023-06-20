@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:hey_rajat/HomeScreen/createNotes.dart';
 import 'package:hey_rajat/HomeScreen/notesData.dart';
 import 'package:hey_rajat/Utils/utils.dart';
@@ -16,7 +18,8 @@ class _NotesState extends State<Notes> {
   List<dynamic> notesList = [];
   bool isload = true;
   String password = "";
-
+  static final customchache = CacheManager(Config('customCacheKey',
+      stalePeriod: const Duration(days: 2), maxNrOfCacheObjects: 100000000));
   TextEditingController newpassword = TextEditingController();
   TextEditingController reenternewpassword = TextEditingController();
   TextEditingController verifypassword = TextEditingController();
@@ -109,9 +112,30 @@ class _NotesState extends State<Notes> {
     }
   }
 
+  String background =
+      "https://firebasestorage.googleapis.com/v0/b/hey-rajat.appspot.com/o/whitebackground.jpeg?alt=media&token=58598a87-88f5-4d28-bc7d-e76e4211e609";
+
+  void getbackground(String documentId) async {
+    CollectionReference colRef =
+        FirebaseFirestore.instance.collection("heyrajat");
+    DocumentReference docRef = colRef.doc(documentId);
+    DocumentSnapshot snapshot = await docRef.get();
+    if (snapshot.exists) {
+      setState(() {
+        background = snapshot.get('background');
+      });
+    } else {
+      Utils.show_Simple_Snackbar(
+        context,
+        "Contact to Rajat 8273024102",
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    getbackground(widget.uid);
     getdata(widget.uid);
   }
 
@@ -127,198 +151,223 @@ class _NotesState extends State<Notes> {
           style: TextStyle(color: Colors.black),
         ),
       ),
-      body: isload
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : notesList.isEmpty
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: CachedNetworkImageProvider(
+                  background,
+                  cacheManager: customchache,
+                ),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          isload
               ? const Center(
-                  child: Text(
-                    "No notes found",
-                    style: TextStyle(color: Colors.red),
-                  ),
+                  child: CircularProgressIndicator(),
                 )
-              : ListView.builder(
-                  itemCount: notesList.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ListTile(
-                          leading: CircleAvatar(
-                            radius: 25,
-                            backgroundColor: Colors.white,
-                            child: Text(
-                              notesList[index]['title'][0]
-                                  .toString()
-                                  .toUpperCase(),
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18),
-                            ),
-                          ),
-                          tileColor: Colors.deepPurple,
-                          shape: const StadiumBorder(
-                              side: BorderSide(color: Colors.white)),
-                          onTap: () {
-                            if (widget.role == "Admin") {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => NotesData(
-                                            date: notesList[index]['date'],
-                                            lock: notesList[index]['lock'],
-                                            thought: notesList[index]
-                                                ['thought'],
-                                            title: notesList[index]['title'],
-                                            index: index,
-                                            uid: widget.uid,
-                                            password: password,
-                                          ))).then((value) {
-                                if (value == "yes") {
-                                  getdata(widget.uid);
-                                }
-                              });
-                            } else {
-                              if (notesList[index]['lock'] == true) {
-                                verifypassword.clear();
-                                passwordverification(index, 1);
-                              } else {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => NotesData(
-                                              date: notesList[index]['date'],
-                                              lock: notesList[index]['lock'],
-                                              thought: notesList[index]
-                                                  ['thought'],
-                                              title: notesList[index]['title'],
-                                              index: index,
-                                              uid: widget.uid,
-                                              password: password,
-                                            ))).then((value) {
-                                  if (value == "yes") {
-                                    getdata(widget.uid);
-                                  }
-                                });
-                              }
-                            }
-                          },
-                          title: Text(
-                            notesList[index]['title'],
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          isThreeLine: true,
-                          splashColor: Colors.purple,
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                notesList[index]['date'],
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontStyle: FontStyle.italic),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                notesList[index]['lock']
-                                    ? notesList[index]['thought']
-                                            .toString()
-                                            .substring(0, 4) +
-                                        "......"
-                                    : notesList[index]['thought'],
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontStyle: FontStyle.italic),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ],
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              notesList[index]['lock']
-                                  ? const Icon(
-                                      Icons.lock,
-                                      color: Colors.red,
-                                    )
-                                  : const SizedBox(),
-                              PopupMenuButton(
-                                color: Colors.white,
-                                onSelected: (value) {
-                                  if (value == 1) {
-                                    if (password == "") {
-                                      newpassword.clear();
-                                      reenternewpassword.clear();
-                                      createpassword(index);
-                                    } else {
-                                      if (notesList[index]['lock'] == false) {
-                                        updatedata(widget.uid, index, true);
-                                      } else if (notesList[index]['lock'] ==
-                                          true) {
-                                        verifypassword.clear();
-                                        passwordverification(index, 2);
+              : notesList.isEmpty
+                  ? const Center(
+                      child: Text(
+                        "No notes found",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: notesList.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.deepPurple,
+                                borderRadius: BorderRadius.circular(20)),
+                            child: ListTile(
+                                leading: CircleAvatar(
+                                  radius: 25,
+                                  backgroundColor: Colors.white,
+                                  child: Text(
+                                    notesList[index]['title'][0]
+                                        .toString()
+                                        .toUpperCase(),
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18),
+                                  ),
+                                ),
+                                onTap: () {
+                                  if (widget.role == "Admin") {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => NotesData(
+                                                  date: notesList[index]
+                                                      ['date'],
+                                                  lock: notesList[index]
+                                                      ['lock'],
+                                                  thought: notesList[index]
+                                                      ['thought'],
+                                                  title: notesList[index]
+                                                      ['title'],
+                                                  index: index,
+                                                  uid: widget.uid,
+                                                  password: password,
+                                                ))).then((value) {
+                                      if (value == "yes") {
+                                        getdata(widget.uid);
                                       }
-                                    }
-                                  } else if (value == 2) {
-                                    if (password == "") {
-                                      newpassword.clear();
-                                      reenternewpassword.clear();
-                                      createpassword(index);
+                                    });
+                                  } else {
+                                    if (notesList[index]['lock'] == true) {
+                                      verifypassword.clear();
+                                      passwordverification(index, 1);
                                     } else {
-                                      previouspassword.clear();
-                                      changepasswordpassword.clear();
-                                      changepassword(index);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => NotesData(
+                                                    date: notesList[index]
+                                                        ['date'],
+                                                    lock: notesList[index]
+                                                        ['lock'],
+                                                    thought: notesList[index]
+                                                        ['thought'],
+                                                    title: notesList[index]
+                                                        ['title'],
+                                                    index: index,
+                                                    uid: widget.uid,
+                                                    password: password,
+                                                  ))).then((value) {
+                                        if (value == "yes") {
+                                          getdata(widget.uid);
+                                        }
+                                      });
                                     }
-                                  } else if (value == 3) {
-                                    Utils.alertpopup(
-                                        buttontitle: "Yes",
-                                        context: context,
-                                        title:
-                                            "Are you sure you want to delete the notes?",
-                                        onclick: () {
-                                          deleteValues(index);
-                                          Navigator.pop(context);
-                                        });
                                   }
                                 },
-                                itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                      value: 1,
-                                      child: Text(
-                                        notesList[index]['lock']
-                                            ? "Unlock"
-                                            : "Lock",
-                                      )),
-                                  const PopupMenuItem(
-                                      value: 2,
-                                      child: Text(
-                                        "Change password",
-                                      )),
-                                  PopupMenuItem(
-                                      enabled:
-                                          widget.role == "Admin" ? true : false,
-                                      value: 3,
-                                      child: const Text(
-                                        "Delete Note",
-                                      ))
-                                ],
-                              ),
-                            ],
-                          )),
-                    );
-                  },
-                ),
+                                title: Text(
+                                  notesList[index]['title'],
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                isThreeLine: true,
+                                splashColor: Colors.purple,
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      notesList[index]['date'],
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontStyle: FontStyle.italic),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      notesList[index]['lock']
+                                          ? notesList[index]['thought']
+                                                  .toString()
+                                                  .substring(0, 4) +
+                                              "......"
+                                          : notesList[index]['thought'],
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontStyle: FontStyle.italic),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    notesList[index]['lock']
+                                        ? const Icon(
+                                            Icons.lock,
+                                            color: Colors.red,
+                                          )
+                                        : const SizedBox(),
+                                    PopupMenuButton(
+                                      color: Colors.white,
+                                      onSelected: (value) {
+                                        if (value == 1) {
+                                          if (password == "") {
+                                            newpassword.clear();
+                                            reenternewpassword.clear();
+                                            createpassword(index);
+                                          } else {
+                                            if (notesList[index]['lock'] ==
+                                                false) {
+                                              updatedata(
+                                                  widget.uid, index, true);
+                                            } else if (notesList[index]
+                                                    ['lock'] ==
+                                                true) {
+                                              verifypassword.clear();
+                                              passwordverification(index, 2);
+                                            }
+                                          }
+                                        } else if (value == 2) {
+                                          if (password == "") {
+                                            newpassword.clear();
+                                            reenternewpassword.clear();
+                                            createpassword(index);
+                                          } else {
+                                            previouspassword.clear();
+                                            changepasswordpassword.clear();
+                                            changepassword(index);
+                                          }
+                                        } else if (value == 3) {
+                                          Utils.alertpopup(
+                                              buttontitle: "Yes",
+                                              context: context,
+                                              title:
+                                                  "Are you sure you want to delete the notes?",
+                                              onclick: () {
+                                                deleteValues(index);
+                                                Navigator.pop(context);
+                                              });
+                                        }
+                                      },
+                                      itemBuilder: (context) => [
+                                        PopupMenuItem(
+                                            value: 1,
+                                            child: Text(
+                                              notesList[index]['lock']
+                                                  ? "Unlock"
+                                                  : "Lock",
+                                            )),
+                                        const PopupMenuItem(
+                                            value: 2,
+                                            child: Text(
+                                              "Change password",
+                                            )),
+                                        const PopupMenuItem(
+                                            // enabled:
+                                            //     widget.role == "Admin" ? true : false,
+                                            value: 3,
+                                            child: Text(
+                                              "Delete Note",
+                                            ))
+                                      ],
+                                    ),
+                                  ],
+                                )),
+                          ),
+                        );
+                      },
+                    ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.amber,
           elevation: 20,
-          splashColor: Colors.black,
           onPressed: () {
             Navigator.push(
                 context,

@@ -32,6 +32,7 @@ class _MomentsState extends State<Moments> {
 
     try {
       DocumentSnapshot snapshot = await docRef.get();
+      print(snapshot.get('time'));
       Duration difference =
           Timestamp.now().toDate().difference(snapshot.get('time').toDate());
 
@@ -52,6 +53,37 @@ class _MomentsState extends State<Moments> {
               "time": Timestamp.now(),
             }, SetOptions(merge: true));
             value = true;
+          }
+          if (!snapshot.get('7days')) {
+            if (snapshot.get('streak') > 6) {
+              await docRef.set({"7days": true}, SetOptions(merge: true));
+              value = true;
+            }
+          }
+
+          if (!snapshot.get('30days')) {
+            if (snapshot.get('streak') > 29) {
+              await docRef.set({"30days": true}, SetOptions(merge: true));
+              value = true;
+            }
+          }
+          if (!snapshot.get('90days')) {
+            if (snapshot.get('streak') > 89) {
+              await docRef.set({"90days": true}, SetOptions(merge: true));
+              value = true;
+            }
+          }
+          if (!snapshot.get('180days')) {
+            if (snapshot.get('streak') > 179) {
+              await docRef.set({"180days": true}, SetOptions(merge: true));
+              value = true;
+            }
+          }
+          if (!snapshot.get('365days')) {
+            if (snapshot.get('streak') > 364) {
+              await docRef.set({"365days": true}, SetOptions(merge: true));
+              value = true;
+            }
           }
         }
       } else {
@@ -183,17 +215,17 @@ class _MomentsState extends State<Moments> {
                                       ]));
                         },
                         onDoubleTap: () {
-                          if (widget.role == "Admin") {
-                            if (showimagelist[index]['check'] == true) {
-                              setState(() {
-                                showimagelist[index]['check'] = false;
-                              });
-                            } else {
-                              setState(() {
-                                showimagelist[index]['check'] = true;
-                              });
-                            }
+                          // if (widget.role == "Admin") {
+                          if (showimagelist[index]['check'] == true) {
+                            setState(() {
+                              showimagelist[index]['check'] = false;
+                            });
+                          } else {
+                            setState(() {
+                              showimagelist[index]['check'] = true;
+                            });
                           }
+                          // }
                         },
                         child: Stack(
                           fit: StackFit.expand,
