@@ -44,7 +44,7 @@ class _NotesState extends State<Notes> {
       } else {
         Utils.show_Simple_Snackbar(
           context,
-          "Contact Rajat at 8273024102",
+          "Kindly please contact to admin.",
         );
       }
     } catch (e) {
@@ -76,7 +76,7 @@ class _NotesState extends State<Notes> {
       } else {
         Utils.show_Simple_Snackbar(
           context,
-          "Contact Rajat at 8273024102",
+          "Kindly please contact to admin.",
         );
       }
     } catch (e) {
@@ -103,7 +103,7 @@ class _NotesState extends State<Notes> {
       } else {
         Utils.show_Simple_Snackbar(
           context,
-          "Contact Rajat at 8273024102",
+          "Kindly please contact to admin.",
         );
       }
     } catch (e) {
@@ -127,7 +127,7 @@ class _NotesState extends State<Notes> {
     } else {
       Utils.show_Simple_Snackbar(
         context,
-        "Contact to Rajat 8273024102",
+        "Kindly please contact to admin.",
       );
     }
   }
@@ -324,15 +324,21 @@ class _NotesState extends State<Notes> {
                                             changepassword(index);
                                           }
                                         } else if (value == 3) {
-                                          Utils.alertpopup(
-                                              buttontitle: "Yes",
-                                              context: context,
-                                              title:
-                                                  "Are you sure you want to delete the notes?",
-                                              onclick: () {
-                                                deleteValues(index);
-                                                Navigator.pop(context);
-                                              });
+                                          if (notesList[index]['lock'] ==
+                                              true) {
+                                            verifypassword.clear();
+                                            passwordverification(index, 3);
+                                          } else {
+                                            Utils.alertpopup(
+                                                buttontitle: "Yes",
+                                                context: context,
+                                                title:
+                                                    "Are you sure you want to delete the notes?",
+                                                onclick: () {
+                                                  deleteValues(index);
+                                                  Navigator.pop(context);
+                                                });
+                                          }
                                         }
                                       },
                                       itemBuilder: (context) => [
@@ -806,6 +812,17 @@ class _NotesState extends State<Notes> {
                               getdata(widget.uid);
                             }
                           });
+                        } else if (check == 3) {
+                          Navigator.pop(context);
+                          Utils.alertpopup(
+                              buttontitle: "Yes",
+                              context: context,
+                              title:
+                                  "Are you sure you want to delete the notes?",
+                              onclick: () {
+                                deleteValues(index);
+                                Navigator.pop(context);
+                              });
                         } else {
                           updatedata(widget.uid, index, false);
                           Navigator.pop(context);
@@ -813,7 +830,8 @@ class _NotesState extends State<Notes> {
                       }
                     }
                   },
-                  child: Text(check == 1 ? "Open" : "Remove lock"),
+                  child:
+                      Text(check == 1 || check == 3 ? "Open" : "Remove lock"),
                   style: ElevatedButton.styleFrom(
                       shape: const StadiumBorder(),
                       backgroundColor: Colors.deepPurple),
@@ -856,7 +874,7 @@ class _NotesState extends State<Notes> {
       } else {
         Utils.show_Simple_Snackbar(
           context,
-          "Contact Rajat at 8273024102",
+          "Kindly please contact to admin.",
         );
       }
     } catch (e) {

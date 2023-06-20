@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:app_settings/app_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -45,7 +43,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     } else {
       Utils.show_Simple_Snackbar(
         context,
-        "Contact Rajat at 8273024102",
+        "Kindly please contact to admin.",
       );
     }
   }
@@ -86,7 +84,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     } else {
       Utils.show_Simple_Snackbar(
         context,
-        "Contact Rajat at 8273024102",
+        "Kindly please contact to admin.",
       );
     }
   }
@@ -98,18 +96,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
     DocumentSnapshot snapshot = await docRef.get();
     if (snapshot.exists) {
       List url = [snapshot.get("background")];
-      deletePhotos(url);
+      if (url[0] !=
+          "https://firebasestorage.googleapis.com/v0/b/hey-rajat.appspot.com/o/whitebackground.jpeg?alt=media&token=58598a87-88f5-4d28-bc7d-e76e4211e609") {
+        deletePhotos(url);
+      }
       await docRef.set({"background": backgroundstring},
           SetOptions(merge: true)).whenComplete(() {
         setState(() {
-          isload = false;
           getdata(documentId);
         });
       });
     } else {
       Utils.show_Simple_Snackbar(
         context,
-        "Contact Rajat at 8273024102",
+        "Kindly please contact to admin.",
       );
     }
   }
@@ -158,7 +158,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     } else {
       Utils.show_Simple_Snackbar(
         context,
-        "Contact to Rajat 8273024102",
+        "Kindly please contact to admin.",
       );
     }
   }
@@ -167,6 +167,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     getdata(widget.uid);
+    // requestNotificationPermissions();
   }
 
   static final customchache = CacheManager(Config('customCacheKey',
@@ -620,7 +621,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     } else {
       Utils.show_Simple_Snackbar(
         context,
-        "Contact Rajat at 8273024102",
+        "Kindly please contact to admin.",
       );
     }
   }

@@ -52,7 +52,7 @@ class _CreateNoteState extends State<CreateNote> {
       } else {
         Utils.show_Simple_Snackbar(
           context,
-          "Contact Rajat at 8273024102",
+          "Kindly please contact to admin.",
         );
       }
     } catch (e) {
@@ -88,7 +88,7 @@ class _CreateNoteState extends State<CreateNote> {
       } else {
         Utils.show_Simple_Snackbar(
           context,
-          "Contact Rajat at 8273024102",
+          "Kindly please contact to admin.",
         );
       }
     } catch (e) {

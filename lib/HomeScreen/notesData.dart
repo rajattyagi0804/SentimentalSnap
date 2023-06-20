@@ -48,7 +48,7 @@ class _NotesDataState extends State<NotesData> {
       } else {
         Utils.show_Simple_Snackbar(
           context,
-          "Contact Rajat at 8273024102",
+          "Kindly please contact to admin.",
         );
       }
     } catch (e) {
@@ -80,7 +80,7 @@ class _NotesDataState extends State<NotesData> {
       } else {
         Utils.show_Simple_Snackbar(
           context,
-          "Contact Rajat at 8273024102",
+          "Kindly please contact to admin.",
         );
       }
     } catch (e) {

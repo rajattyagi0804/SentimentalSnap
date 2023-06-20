@@ -50,7 +50,7 @@ dependencies:
   flutter_cache_manager: ^3.3.0
   intl:
   image_picker:
-  firebase_messaging: ^14.6.3
+  
 
 
 dev_dependencies:

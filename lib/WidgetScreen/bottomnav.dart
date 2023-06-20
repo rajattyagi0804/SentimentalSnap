@@ -71,7 +71,11 @@ class _BottomNavstate extends State<BottomNav> {
               label: "Dairy",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person),
+              icon: Image.asset(
+                'images/profileicon.png',
+                width: 25,
+                height: 25,
+              ),
               label: "Profile",
             ),
           ]),

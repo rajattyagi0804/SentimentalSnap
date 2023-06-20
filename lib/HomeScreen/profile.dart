@@ -40,7 +40,7 @@ class _ProfileState extends State<Profile> {
     } else {
       Utils.show_Simple_Snackbar(
         context,
-        "Contact to Rajat 8273024102",
+        "Kindly please contact to admin.",
       );
     }
   }
@@ -103,10 +103,11 @@ class _ProfileState extends State<Profile> {
               radius: 67,
               backgroundColor: Colors.black,
               child: CircleAvatar(
+                backgroundColor: Color.fromARGB(255, 198, 8, 109),
                 radius: 64,
                 child: Text(
                   widget.email[0].toUpperCase(),
-                  style: const TextStyle(fontSize: 60),
+                  style: const TextStyle(fontSize: 60, color: Colors.white),
                 ),
               ),
             ),
@@ -127,7 +128,7 @@ class _ProfileState extends State<Profile> {
               color: Colors.blue,
             ),
             isload
-                ? Center(
+                ? const Center(
                     child: CircularProgressIndicator(),
                   )
                 : Column(
@@ -155,19 +156,21 @@ class _ProfileState extends State<Profile> {
                                       ? Positioned(
                                           bottom: 60,
                                           left: 40,
-                                          child: Text(
-                                            "7 days",
-                                            style: TextStyle(
-                                                color: Color.fromARGB(
-                                                    255, 235, 137, 130),
-                                                fontWeight: FontWeight.bold),
+                                          child: Container(
+                                            child: const Text(
+                                              "7 days",
+                                              style: TextStyle(
+                                                  color: Color.fromARGB(
+                                                      255, 235, 137, 130),
+                                                  fontWeight: FontWeight.bold),
+                                            ),
                                           ))
-                                      : SizedBox()
+                                      : const SizedBox()
                                 ],
                               ),
                               !days7
-                                  ? SizedBox()
-                                  : Text(
+                                  ? const SizedBox()
+                                  : const Text(
                                       "7 days Streak",
                                       style: TextStyle(
                                           color: Colors.red,
@@ -192,7 +195,7 @@ class _ProfileState extends State<Profile> {
                                     ),
                                   ),
                                   !days30
-                                      ? Positioned(
+                                      ? const Positioned(
                                           bottom: 60,
                                           left: 40,
                                           child: Text(
@@ -202,12 +205,12 @@ class _ProfileState extends State<Profile> {
                                                     255, 235, 137, 130),
                                                 fontWeight: FontWeight.bold),
                                           ))
-                                      : SizedBox()
+                                      : const SizedBox()
                                 ],
                               ),
                               !days30
-                                  ? SizedBox()
-                                  : Text(
+                                  ? const SizedBox()
+                                  : const Text(
                                       "30 days Streak",
                                       style: TextStyle(
                                           color: Colors.red,
@@ -217,7 +220,7 @@ class _ProfileState extends State<Profile> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Row(
@@ -240,7 +243,7 @@ class _ProfileState extends State<Profile> {
                                     ),
                                   ),
                                   !days90
-                                      ? Positioned(
+                                      ? const Positioned(
                                           bottom: 60,
                                           left: 40,
                                           child: Text(
@@ -250,12 +253,12 @@ class _ProfileState extends State<Profile> {
                                                     255, 235, 137, 130),
                                                 fontWeight: FontWeight.bold),
                                           ))
-                                      : SizedBox()
+                                      : const SizedBox()
                                 ],
                               ),
                               !days90
-                                  ? SizedBox()
-                                  : Text(
+                                  ? const SizedBox()
+                                  : const Text(
                                       "90 days Streak",
                                       style: TextStyle(
                                           color: Colors.red,
@@ -280,7 +283,7 @@ class _ProfileState extends State<Profile> {
                                     ),
                                   ),
                                   !days180
-                                      ? Positioned(
+                                      ? const Positioned(
                                           bottom: 60,
                                           left: 40,
                                           child: Text(
@@ -290,12 +293,12 @@ class _ProfileState extends State<Profile> {
                                                     255, 235, 137, 130),
                                                 fontWeight: FontWeight.bold),
                                           ))
-                                      : SizedBox()
+                                      : const SizedBox()
                                 ],
                               ),
                               !days180
-                                  ? SizedBox()
-                                  : Text(
+                                  ? const SizedBox()
+                                  : const Text(
                                       "180 days Streak",
                                       style: TextStyle(
                                           color: Colors.red,
@@ -305,7 +308,7 @@ class _ProfileState extends State<Profile> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Column(
@@ -324,7 +327,7 @@ class _ProfileState extends State<Profile> {
                                 ),
                               ),
                               !days365
-                                  ? Positioned(
+                                  ? const Positioned(
                                       bottom: 60,
                                       left: 40,
                                       child: Text(
@@ -334,12 +337,12 @@ class _ProfileState extends State<Profile> {
                                                 255, 235, 137, 130),
                                             fontWeight: FontWeight.bold),
                                       ))
-                                  : SizedBox()
+                                  : const SizedBox()
                             ],
                           ),
                           !days365
-                              ? SizedBox()
-                              : Text(
+                              ? const SizedBox()
+                              : const Text(
                                   "365 days Streak",
                                   style: TextStyle(
                                       color: Colors.red,

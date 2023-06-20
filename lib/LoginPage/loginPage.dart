@@ -12,7 +12,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _isHidden = true;
-
   bool isload = false;
   String? errormessage = "";
   final TextEditingController _emailcontroller = TextEditingController();
