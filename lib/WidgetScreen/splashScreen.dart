@@ -1,14 +1,14 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hey_rajat/Admin/adminScreen.dart';
 import 'package:hey_rajat/LoginPage/loginPage.dart';
-import 'package:hey_rajat/Utils/utils.dart';
 import 'package:hey_rajat/WidgetScreen/bottomnav.dart';
 import 'package:hey_rajat/WidgetScreen/widget.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }

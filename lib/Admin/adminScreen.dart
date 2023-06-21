@@ -38,7 +38,6 @@ class _AdminScreenState extends State<AdminScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getdata();
   }

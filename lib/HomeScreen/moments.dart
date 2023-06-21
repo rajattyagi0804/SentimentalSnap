@@ -32,10 +32,10 @@ class _MomentsState extends State<Moments> {
 
     try {
       DocumentSnapshot snapshot = await docRef.get();
-      print(snapshot.get('time'));
-      Duration difference =
-          Timestamp.now().toDate().difference(snapshot.get('time').toDate());
 
+      var diffInDays = Utils.getDifferenceInDays(snapshot.get('time').toDate());
+      print(diffInDays);
+      print(snapshot.get('streak'));
       if (snapshot.exists) {
         if (imageUrls.isNotEmpty) {
           List<dynamic> momentsList = snapshot.get(key) ?? [];
@@ -47,7 +47,7 @@ class _MomentsState extends State<Moments> {
           }, SetOptions(merge: true));
           getdata(documentId, key);
 
-          if (difference.inDays > 0) {
+          if (diffInDays != 0) {
             await docRef.set({
               "streak": snapshot.get('streak') + 1,
               "time": Timestamp.now(),

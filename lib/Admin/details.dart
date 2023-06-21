@@ -71,8 +71,8 @@ class _UserDetailsinAdminViewState extends State<UserDetailsinAdminView> {
                       ]),
                   TableRow(children: [
                     const Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 5),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 5),
                       child: Text(
                         'Email',
                       ),
@@ -85,8 +85,8 @@ class _UserDetailsinAdminViewState extends State<UserDetailsinAdminView> {
                   ]),
                   TableRow(children: [
                     const Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 5),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 5),
                       child: Text(
                         'Uid',
                       ),
@@ -113,8 +113,8 @@ class _UserDetailsinAdminViewState extends State<UserDetailsinAdminView> {
                   ]),
                   TableRow(children: [
                     const Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 5),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 5),
                       child: Text(
                         'Notes Password',
                       ),

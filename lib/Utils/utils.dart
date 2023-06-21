@@ -250,4 +250,17 @@ class Utils {
       message: message ?? "",
     ).show(context);
   }
+
+  static int getDifferenceInDays(DateTime dateTime) {
+    DateTime today = DateTime.now().toLocal();
+    DateTime providedDateTime = dateTime.toLocal();
+
+    DateTime todayDate = DateTime(today.year, today.month, today.day);
+    DateTime providedDate = DateTime(
+        providedDateTime.year, providedDateTime.month, providedDateTime.day);
+
+    Duration difference = providedDate.difference(todayDate);
+
+    return difference.inDays;
+  }
 }

@@ -124,9 +124,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       momentarray.clear();
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
 
-      Duration difference =
-          Timestamp.now().toDate().difference(snapshot.get('time').toDate());
-      if (difference.inDays > 1) {
+      var diffInDays = Utils.getDifferenceInDays(snapshot.get('time').toDate());
+
+      if (diffInDays < -1 || diffInDays > 0) {
         await docRef.set({"streak": 0}, SetOptions(merge: true));
       }
       data.forEach((key, value) {
@@ -143,7 +143,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         } else if (key == "background") {
           background = value;
         } else if (key == "streak") {
-          if (difference.inDays > 1) {
+          if (diffInDays < -1 || diffInDays > 0) {
             streak = 0;
           } else {
             streak = value;
@@ -153,7 +153,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
       setState(() {
         isload = false;
-        diff = difference.inDays;
+        diff = diffInDays;
       });
     } else {
       Utils.show_Simple_Snackbar(
@@ -167,7 +167,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     getdata(widget.uid);
-    // requestNotificationPermissions();
   }
 
   static final customchache = CacheManager(Config('customCacheKey',

@@ -44,8 +44,8 @@ class _BottomNavstate extends State<BottomNav> {
           backgroundColor: Colors.indigo,
           selectedItemColor: Colors.yellow,
           unselectedItemColor: Colors.white,
-          selectedIconTheme: IconThemeData(color: Colors.yellow),
-          unselectedIconTheme: IconThemeData(color: Colors.white),
+          selectedIconTheme: const IconThemeData(color: Colors.yellow),
+          unselectedIconTheme: const IconThemeData(color: Colors.white),
           showSelectedLabels: true,
           onTap: (index) {
             setState(() {
