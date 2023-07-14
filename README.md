@@ -1,4 +1,4 @@
-# hey_rajat
+# SentimentalSnap
 
 A new Flutter project.
 
